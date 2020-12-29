@@ -1,0 +1,7 @@
+.git
+*.DS*
+.vscode
+temp/
+node_modules/
+log/
+app/

@@ -1,0 +1,27 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "outDir": "./dist",
+    "sourceMap": true,
+    "strict": true,
+    "noImplicitThis": true,
+    "jsx": "react",
+    "experimentalDecorators": true,
+    "noImplicitReturns": true,
+    "module": "es2020",
+    "moduleResolution": "node",
+    "target": "es5"
+  },
+  "types": [
+    "node",
+    "webpack-env",
+    "./node_modules/vue/types"
+  ],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.vue"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

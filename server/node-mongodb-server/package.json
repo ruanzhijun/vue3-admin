@@ -1,0 +1,72 @@
+{
+  "name": "node-mongodb-server",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "rimraf app && tsc -p ./",
+    "start": "cross-env NODE_ENV=local-dev TS_NODE_TRANSPILE_ONLY=true ts-node -r tsconfig-paths/register src/main.ts",
+    "tslint": "tslint -c tslint.json 'src/**/*.ts' --fix && tslint -c tslint.json 'test/**/*.test.ts' --fix",
+    "doc": "rimraf doc/ && node scripts/error-code.js && apidoc -i src/ -o doc/"
+  },
+  "dependencies": {
+    "@nestjs/common": "7.6.4",
+    "@nestjs/core": "7.6.4",
+    "@nestjs/platform-express": "7.6.4",
+    "@nestjs/typeorm": "7.1.5",
+    "bluebird": "3.7.2",
+    "config": "3.3.3",
+    "crypto-js": "4.0.0",
+    "joi": "17.3.0",
+    "jsonwebtoken": "8.5.1",
+    "lodash": "4.17.20",
+    "log4js": "6.3.0",
+    "moment-timezone": "0.5.32",
+    "mongodb": "3.6.3",
+    "reflect-metadata": "0.1.13",
+    "rxjs": "6.6.3",
+    "share-tracer": "0.0.36",
+    "typeorm": "0.2.29"
+  },
+  "devDependencies": {
+    "@types/bluebird": "3.5.33",
+    "@types/mocha": "8.2.0",
+    "@types/node": "14.14.16",
+    "apidoc": "0.25.0",
+    "cross-env": "7.0.3",
+    "husky": "4.3.6",
+    "mkdirp": "1.0.4",
+    "mocha": "8.2.1",
+    "nyc": "15.1.0",
+    "rimraf": "3.0.2",
+    "ts-node": "9.1.1",
+    "tsconfig-paths": "3.9.0",
+    "tslint": "6.1.3",
+    "tslint-config-airbnb": "5.11.2",
+    "typescript": "4.1.3"
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "tslint -c tslint.json 'src/**/*.ts' && tslint -c tslint.json 'test/**/*.test.ts' && npm run build && rimraf app"
+    }
+  },
+  "nyc": {
+    "cache": false,
+    "check-coverage": true,
+    "lines": 80,
+    "statements": 80,
+    "functions": 80,
+    "branches": 80,
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+      "**/node_modules/**"
+    ],
+    "reporter": [
+      "text",
+      "text-summary"
+    ],
+    "extension": [
+      ".ts"
+    ]
+  }
+}

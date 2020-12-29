@@ -1,0 +1,16 @@
+{
+  "name": "vue3-admin-antdv-demo接口文档",
+  "title": "vue3-admin-antdv-demo接口文档",
+  "template": {
+    "forceLanguage": "zh_cn"
+  },
+  "header": {
+    "title": "准备工作",
+    "filename": "header.md"
+  },
+  "order": [
+    "errorCode",
+    "system",
+    "user"
+  ]
+}

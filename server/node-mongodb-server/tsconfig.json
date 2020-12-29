@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "paths": { "*": ["types/*"] },
+    "module": "commonjs",
+    "declaration": false,
+    "noImplicitAny": false,
+    "noLib": false,
+    "pretty": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": false,
+    "noImplicitReturns": true,
+    "allowSyntheticDefaultImports": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "es2020",
+    "sourceMap": false,
+    "allowJs": false,
+    "removeComments": true,
+    "outDir": "./app",
+    "baseUrl": "./src"
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "types": [
+    "node",
+    "mocha"
+  ]
+}
