@@ -93,9 +93,7 @@ export class RoleController {
    */
   @Get('/list')
   async roleList(@Query() query) {
-    const {name, page, pageSize} = joiValidate(query, Object.assign({
-      name: joi.string().trim().strict().trim().error(SystemError.PARAMS_ERROR('角色名不能为空'))
-    }, PaginationSchema))
+    const {name, page, pageSize} = joiValidate(query, {name: joi.string().trim().strict().trim().error(SystemError.PARAMS_ERROR('角色名不能为空')), ...PaginationSchema})
     return this.roleService.roleList(name, page, pageSize)
   }
 
@@ -198,9 +196,7 @@ export class RoleController {
    */
   @Post('/delete')
   async deleteRole(@Body() body) {
-    const {roleId} = joiValidate(body, {
-      roleId: joi.string().length(24).required().strict().trim().error(SystemError.PARAMS_ERROR('请传入正确的角色id'))
-    })
+    const {roleId} = joiValidate(body, {roleId: joi.string().length(24).required().strict().trim().error(SystemError.PARAMS_ERROR('请传入正确的角色id'))})
 
     await this.roleService.deleteRole(roleId)
     return 1

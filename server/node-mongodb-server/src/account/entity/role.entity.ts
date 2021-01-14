@@ -9,17 +9,20 @@ import {DatabaseType} from '../../common/constant'
 export class RoleEntity {
   @ObjectIdColumn()
   id: ObjectID
+
   /**
    * 角色名
    */
   @Column()
   @Index('name', {background: true, unique: true})
   name: string
+
   /**
    * 角色可以访问的菜单、按钮
    */
   @Column()
   authority: any
+
   /**
    * 角色生成时间
    */

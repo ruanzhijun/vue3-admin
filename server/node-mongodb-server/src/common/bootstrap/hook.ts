@@ -10,7 +10,7 @@ process.on('SIGINT', async () => {
   process.exit(0)
 })
 
-process.on('uncaughtException', (err) => {
+process.on('uncaughtException', err => {
   Logger.error('未知错误', err)
 })
 

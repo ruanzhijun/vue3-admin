@@ -128,9 +128,7 @@ export class GlobalController {
    */
   @Post('/global/config/:id')
   async deleteGlobalConfig(@Body() body) {
-    const {id} = joiValidate(body, {
-      id: joi.string().length(24).required().strict().error(SystemError.PARAMS_ERROR('请传入正确的配置id'))
-    })
+    const {id} = joiValidate(body, {id: joi.string().length(24).required().strict().error(SystemError.PARAMS_ERROR('请传入正确的配置id'))})
 
     await this.systemService.deleteGlobalConfig(id)
     return 1

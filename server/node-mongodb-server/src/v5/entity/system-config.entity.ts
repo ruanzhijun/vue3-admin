@@ -9,22 +9,26 @@ import {DatabaseType} from '../../common/constant'
 export class SystemConfigEntity {
   @ObjectIdColumn()
   id: ObjectID
+
   /**
    * 模块
    */
   @Column()
   module: string
+
   /**
    * 配置key
    */
   @Column()
   @Index('key', {unique: true, background: true})
   key: string
+
   /**
    * 配置值
    */
   @Column()
   value: any
+
   /**
    * 配置说明
    */

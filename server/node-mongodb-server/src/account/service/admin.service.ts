@@ -61,8 +61,13 @@ export class AdminService {
    * @param roleId 角色id
    */
   async createAdmin(username: string, password: string, roleId: string[]): Promise<AdminEntity> {
-    password = this.genAdminPassword(password)
-    return this.adminRepository.save({username, password, status: 'enable', roleId, createTime: Date.now()})
+    return this.adminRepository.save({
+      username,
+      password: this.genAdminPassword(password),
+      status: 'enable',
+      roleId,
+      createTime: Date.now()
+    })
   }
 
   /**

@@ -21,8 +21,8 @@ export class SystemService {
   async getGlobalConfig(key?: string): Promise<any[]> {
     const globalConfig = await this.systemConfigRepository.find(_.pickBy({key}, _.identity))
     const result = {}
-    globalConfig.forEach(value => result[`${value.module}`] = {module: value.module, config: []})
-    globalConfig.forEach(value => result[`${value.module}`].config.push(value))
+    globalConfig.forEach(value => Object.assign(result, {[value.module]: {module: value.module, config: []} }))
+    globalConfig.forEach(value => result[value.module].config.push(value))
 
     // 按照模块名自然排序
     return Object.values(result).sort((a, b) => _.get(b, 'module').localeCompare(_.get(a, 'module')))

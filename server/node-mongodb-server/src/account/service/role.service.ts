@@ -106,5 +106,4 @@ export class RoleService {
   async countByRoleId(roleId: string): Promise<number> {
     return this.adminRepository.count({roleId})
   }
-
 }

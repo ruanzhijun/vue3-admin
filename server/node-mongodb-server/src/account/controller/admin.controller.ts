@@ -80,7 +80,7 @@ export class AdminController {
     // 获取管理员信息
     const adminInfo = await this.adminService.adminInfo(admin)
 
-    return Object.assign({token}, adminInfo)
+    return {token, ...adminInfo}
   }
 
   /**
@@ -105,9 +105,7 @@ export class AdminController {
    */
   @Get('/info')
   async info(@Headers() headers) {
-    const {adminId} = joiValidate(headers, {
-      adminId: joi.string().length(24).required().strict().trim().error(SystemError.PARAMS_ERROR('请传入正确的管理员id'))
-    })
+    const {adminId} = joiValidate(headers, {adminId: joi.string().length(24).required().strict().trim().error(SystemError.PARAMS_ERROR('请传入正确的管理员id'))})
 
     // 查询管理员
     const admin = await this.adminService.findAdminById(adminId)
@@ -146,9 +144,7 @@ export class AdminController {
    */
   @Get('/list')
   async adminList(@Query() query) {
-    const {name, page, pageSize} = joiValidate(query, Object.assign({
-      name: joi.string().trim().strict().trim().error(SystemError.PARAMS_ERROR('管理员登录名不能为空'))
-    }, PaginationSchema))
+    const {name, page, pageSize} = joiValidate(query, {name: joi.string().trim().strict().trim().error(SystemError.PARAMS_ERROR('管理员登录名不能为空')), ...PaginationSchema})
     const {list, total} = await this.adminService.adminList(name, page, pageSize)
     for (const admin of list) {
       const roleNames = []
@@ -185,9 +181,7 @@ export class AdminController {
    */
   @Get('/detail')
   async adminDetail(@Query() query) {
-    const {adminId} = joiValidate(query, {
-      adminId: joi.string().length(24).required().strict().trim().error(SystemError.PARAMS_ERROR('请传入正确的管理员id'))
-    })
+    const {adminId} = joiValidate(query, {adminId: joi.string().length(24).required().strict().trim().error(SystemError.PARAMS_ERROR('请传入正确的管理员id'))})
 
     // 校验管理员是否存在
     const admin = await this.adminService.findAdminById(adminId)
@@ -310,8 +304,8 @@ export class AdminController {
       Object.assign(data, {password: this.adminService.genAdminPassword(password)})
     }
     if (roleId) {
-      const role = await this.roleService.findRoleById(roleId)
-      if (!role) {
+      const checkRole = await this.roleService.findRoleById(roleId)
+      if (!checkRole) {
         throw AdminError.ROLE_NOT_EXISTS
       }
       Object.assign(data, {roleId})
@@ -336,9 +330,7 @@ export class AdminController {
    */
   @Post('/delete')
   async delete(@Headers() headers, @Body() body) {
-    const {adminId} = joiValidate(body, {
-      adminId: joi.string().length(24).required().strict().trim().error(SystemError.PARAMS_ERROR('请传入正确的管理员id'))
-    })
+    const {adminId} = joiValidate(body, {adminId: joi.string().length(24).required().strict().trim().error(SystemError.PARAMS_ERROR('请传入正确的管理员id'))})
 
     // 不能删除自己
     if (adminId === headers.adminId) {

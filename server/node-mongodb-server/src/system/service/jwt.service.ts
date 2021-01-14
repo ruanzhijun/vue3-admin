@@ -26,10 +26,10 @@ export class JwtService {
    */
   async encrypt(data: object, options?: jwt.SignOptions): Promise<string> {
     Object.assign(data, {env: config.env})
-    options = options || {}
-    options.algorithm = options.algorithm || this.algorithm
-    options.expiresIn = options.expiresIn || this.expiresIn
-    return jwt.sign(data, this.privateKey, options)
+    return jwt.sign(data, this.privateKey, options || {
+      algorithm: options.algorithm || this.algorithm,
+      expiresIn: options.expiresIn || this.expiresIn
+    })
   }
 
   /**

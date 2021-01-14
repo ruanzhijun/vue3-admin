@@ -42,9 +42,7 @@ export class JwtGuard extends BaseGuard implements CanActivate {
   }
 
   protected async decrypt(ctx, url): Promise<boolean> {
-    const {token} = joiValidate({token: ctx.headers.token || ctx.query.token}, {
-      token: joi.string().trim().min(64).required().strict().error(AdminError.TOKEN_ERROR)
-    })
+    const {token} = joiValidate({token: ctx.headers.token || ctx.query.token}, {token: joi.string().trim().min(64).required().strict().error(AdminError.TOKEN_ERROR)})
     const decryptData = await this.jwtService.decrypt(token)
     if (!decryptData) {
       Logger.warn(`用户token解析失败，token：${token}, url：${url}`)

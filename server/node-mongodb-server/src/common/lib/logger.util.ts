@@ -1,4 +1,4 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 import {LoggerService} from '@nestjs/common'
 import * as config from 'config'
 import * as log4js from 'log4js'
