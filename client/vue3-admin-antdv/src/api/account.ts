@@ -28,9 +28,10 @@ export class AccountApi {
    * 角色列表
    * @param page 当前页码
    * @param pageSize 页面大小
+   * @param name 角色名搜索
    */
-  static async getRoleList(page: number, pageSize: number): Promise<{total: number, list: any[]}> {
-    return HttpUtil.get('/account/role/list', {page, pageSize})
+  static async getRoleList(page: number, pageSize: number, name?: string): Promise<{total: number, list: any[]}> {
+    return HttpUtil.get('/account/role/list', {page, pageSize, name})
   }
 
   /**

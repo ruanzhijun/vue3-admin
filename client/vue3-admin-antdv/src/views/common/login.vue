@@ -31,7 +31,7 @@
 import {useForm} from '@ant-design-vue/use'
 import {LockOutlined, UserOutlined} from '@ant-design/icons-vue'
 import {Button, Form, Input, message} from 'ant-design-vue'
-import {defineComponent, reactive} from 'vue'
+import {defineComponent, reactive, ref} from 'vue'
 import {useStore} from 'vuex'
 import {useRoute} from 'vue-router'
 import {AccountApi} from '../../api'
@@ -61,11 +61,15 @@ export default defineComponent({
       password: ''
     })
 
+    const loading = ref(false)
+
     const {validate, validateInfos} = useForm(form, rules)
     const onSubmit = (e: any) => {
       e.preventDefault()
       validate().then(async (values) => {
+        loading.value = true
         const data = await AccountApi.login(values.username, values.password)
+        loading.value = false
         if (!data) {
           return
         }
@@ -95,7 +99,7 @@ export default defineComponent({
       }
     }
 
-    return {rules, form, validateInfos, onSubmit}
+    return {loading, rules, form, validateInfos, onSubmit}
   }
 })
 </script>

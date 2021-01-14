@@ -24,7 +24,7 @@ export class RoleService {
    * @param authority 角色可以访问的菜单、按钮
    */
   async createRole(name: string, authority: any = {}): Promise<RoleEntity> {
-    return this.roleRepository.save({name, authority, status: 'enable', createTime: Date.now()})
+    return this.roleRepository.save({name, authority, createTime: Date.now()})
   }
 
   /**
@@ -70,11 +70,10 @@ export class RoleService {
    * 编辑角色
    * @param roleId 角色id
    * @param name 角色名
-   * @param status 状态
    * @param authority 角色可以访问的菜单
    */
-  async editRole(roleId: string, name: string, status: string, authority: any): Promise<void> {
-    await this.roleRepository.findOneAndUpdate({_id: ObjectId(roleId)}, {$set: _.pickBy({name, status, authority}, _.identity)})
+  async editRole(roleId: string, name: string, authority: any): Promise<void> {
+    await this.roleRepository.findOneAndUpdate({_id: ObjectId(roleId)}, {$set: _.pickBy({name, authority}, _.identity)})
   }
 
   /**

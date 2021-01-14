@@ -16,11 +16,6 @@ export class RoleEntity {
   @Index('name', {background: true, unique: true})
   name: string
   /**
-   * 状态
-   */
-  @Column()
-  status: 'enable' | 'frozen'
-  /**
    * 角色可以访问的菜单、按钮
    */
   @Column()

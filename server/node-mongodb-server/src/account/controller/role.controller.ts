@@ -84,7 +84,6 @@ export class RoleController {
    *          "id": "5d0cf5c869903f4c8845ed7e",       // 角色id
    *          "name": "超级管理员",                    // 角色名称
    *          "relations": 1,                         // 关联管理员人数
-   *          "status": "enable",                     // 角色状态(enable-正常;frozen-冻结)
    *          "authority": [....],                    // 权限列表
    *          "createTime": 1561130440760             // 角色创建时间
    *       }, {...}]
@@ -119,7 +118,7 @@ export class RoleController {
   @Get('/all')
   async allRole(@Query() query) {
     const roleList = await this.roleService.roleList(null, 1, Number.MAX_SAFE_INTEGER)
-    return roleList.list.filter(v => v.status === 'enable').map(v => ({id: v.id, name: v.name}))
+    return roleList.list.map(v => ({id: v.id, name: v.name}))
   }
 
   /**
@@ -129,7 +128,6 @@ export class RoleController {
    * @apiUse auth
    * @apiParam {String} roleId 角色id
    * @apiParam {String} [name] 角色名
-   * @apiParam {String="enable","frozen"} [status] 角色状态(enable-正常;frozen-冻结)
    * @apiParam {Object} [authority] 角色权限，例子：<br>{<br>&nbsp;&nbsp;&nbsp;&nbsp;"pages":["role-manager","global-config"],<br>&nbsp;&nbsp;&nbsp;&nbsp;"components":["create-role","delete-admin"],<br>&nbsp;&nbsp;&nbsp;&nbsp;"urls":["/account/admin/list","/system/global/config"]<br>}
    * @apiSampleRequest https://vue3.admin.demo.ruanzhijun.cn/api/v1/account/role/edit
    * @apiSuccessExample 返回例子：
@@ -141,10 +139,9 @@ export class RoleController {
    */
   @Post('/edit')
   async editRole(@Body() body) {
-    const {roleId, name, status, authority} = joiValidate(body, {
+    const {roleId, name, authority} = joiValidate(body, {
       roleId: joi.string().length(24).required().strict().trim().error(SystemError.PARAMS_ERROR('请传入正确的角色id')),
       name: joi.string().trim().strict().trim().error(SystemError.PARAMS_ERROR('角色名不能为空')),
-      status: joi.string().valid('enable', 'frozen').strict().trim().error(SystemError.PARAMS_ERROR('请传入正确的状态')),
       authority: joi.object({
         pages: joi.array().unique().items(joi.string().trim().strict()).strict().error(SystemError.PARAMS_ERROR('角色权限格式不正确')),
         components: joi.array().unique().items(joi.string().trim().strict()).strict().error(SystemError.PARAMS_ERROR('角色权限格式不正确')),
@@ -181,7 +178,7 @@ export class RoleController {
       throw AdminError.ROLE_NAME_DUPLICATE
     }
 
-    await this.roleService.editRole(roleId, name, status, authority)
+    await this.roleService.editRole(roleId, name, authority)
     return 1
   }
 

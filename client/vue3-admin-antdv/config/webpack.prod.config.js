@@ -125,7 +125,7 @@ module.exports = {
     ],
     splitChunks: {
       chunks: 'all',
-      minSize: 1,
+      minSize: 200,
       minChunks: 1,
       maxAsyncRequests: 6,
       maxInitialRequests: 4,
@@ -146,7 +146,8 @@ module.exports = {
           name: 'styles',
           test: /\.css$/,
           chunks: 'all',
-          enforce: true
+          enforce: true,
+          priority: 99999
         }
       }
     }
@@ -176,7 +177,7 @@ module.exports = {
       maxChunks: 1
     }),
     new webpack.optimize.MinChunkSizePlugin({
-      minChunkSize: 819200
+      minChunkSize: 200
     })
   ],
   performance: {

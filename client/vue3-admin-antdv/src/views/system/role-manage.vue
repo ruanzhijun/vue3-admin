@@ -5,8 +5,19 @@
     </div>
     <a-button @click="onRefresh">刷新</a-button>
   </a-space>
-  <br/><br/>
-  <a-table bordered :data-source="roleList" :columns="columns" :loading="loading" :pagination="pagination">
+  <div class="line"/>
+  <a-space>
+    <a-form :model="searchForm" layout="inline">
+      <a-form-item ref="name" label="角色名" name="name" v-bind="validateInfoSearch.name">
+        <a-input v-model:value="searchForm.name" placeholder="搜索角色名" allow-clear @change="onSearchNameChange"/>
+      </a-form-item>
+      <a-form-item>
+        <a-button type="primary" @click="onSearch">查询</a-button>
+      </a-form-item>
+    </a-form>
+  </a-space>
+  <div class="line"/>
+  <a-table bordered :data-source="roleList" :columns="columns" :loading="tableLoading" :pagination="pagination">
     <template slot="status" v-slot:status="{text, record}">
       <a-tag color="green" v-if="record.status === 'enable'">{{ record.status === 'enable' ? '正常' : '' }}</a-tag>
       <a-tag color="red" v-if="record.status === 'frozen'">{{ record.status === 'frozen' ? '冻结' : '' }}</a-tag>
@@ -34,7 +45,7 @@
     <template slot="operate" v-slot:operate="{text, record}">
       <div v-if="record.name === '超级管理员'">
         <a-space>
-          <a-tooltip placement="topLeft" title="超管角色不能编辑">
+          <a-tooltip placement="topRight" title="超管角色不能编辑">
             <a-button size="small" disabled="true">编辑</a-button>
           </a-tooltip>
           <a-tooltip placement="topLeft" title="超管角色不能删除">
@@ -67,7 +78,7 @@
       </a-form-item>
       <a-form-item :wrapper-col="{span:14,offset:4}">
         <a-space>
-          <a-button type="primary" @click="onSubmit">提交</a-button>
+          <a-button type="primary" @click="onSubmit" :loading="submitLoading">提交</a-button>
           <a-button @click="onCancel">取消</a-button>
         </a-space>
       </a-form-item>
@@ -79,9 +90,8 @@ import {useForm} from '@ant-design-vue/use'
 import {AutoComplete, Button, Empty, Form, Input, Modal, Pagination, Popconfirm, Popover, Space, Table, Tabs, Tag, Tooltip, Tree} from 'ant-design-vue'
 import {defineComponent, onMounted, reactive, ref, toRaw} from 'vue'
 import {AccountApi} from '../../api'
-import {PageSizeOptions} from '../../constant'
 import {getDescriptionByName, getModuleByPageName, getPageByComponentName, getRouters, getUrlByComponentName} from '../../router'
-import {format} from '../../util'
+import {format, queryString, updateRouter, usePagination} from '../../util'
 
 export default defineComponent({
   components: {
@@ -110,10 +120,9 @@ export default defineComponent({
     const columns = [
       {title: '角色名称', dataIndex: 'name', width: '150px'},
       {title: '关联人数', dataIndex: 'relations', width: '90px'},
-      {title: '状态', dataIndex: 'status', width: '70px', slots: {customRender: 'status'}},
       {title: '权限列表', dataIndex: 'authority', slots: {customRender: 'authority'}},
-      {title: '创建时间', dataIndex: 'createTime', width: '160px', slots: {customRender: 'format'}},
-      {title: '操作', dataIndex: 'operate', width: '180px', slots: {customRender: 'operate'}}
+      {title: '创建时间', dataIndex: 'createTime', width: '170px', slots: {customRender: 'format'}},
+      {title: '操作', dataIndex: 'operate', width: '150px', slots: {customRender: 'operate'}}
     ]
 
     const rules = reactive({
@@ -122,28 +131,14 @@ export default defineComponent({
       authority: [{required: true}]
     })
 
+    const searchRules = reactive({name: [{required: false}]})
+
     // 状态
     const roleList = ref([] as any[])
-    const current = ref(1)
-    const total = ref(-1)
-    const pageSize = ref(0)
-    const loading = ref(false)
-    const pagination = ref({
-      current,
-      total,
-      pageSize: parseInt(PageSizeOptions[0]),
-      showSizeChanger: true,
-      pageSizeOptions: PageSizeOptions,
-      showTotal: (total: number) => `共 ${total} 条`,
-      onChange: (page: number): void => {
-        current.value = page
-        getRoleList()
-      },
-      onShowSizeChange: (current: number, size: number): void => {
-        pageSize.value = size
-        getRoleList()
-      }
-    })
+    const query = queryString()
+    const tableLoading = ref(false)
+    const submitLoading = ref(false)
+    const pagination = usePagination(() => getRoleList())
 
     // 弹窗
     const modalVisible = ref(false)
@@ -152,6 +147,8 @@ export default defineComponent({
     const checkedKeys = ref([] as string[])
     const form = reactive({id: '', name: '', authority: [] as string[]})
     const {resetFields, validate, validateInfos} = useForm(form, rules)
+    const searchForm = reactive({name: query && query.name ? query.name.toString() : ''})
+    const {validate: validateSearch, validateInfos: validateInfoSearch} = useForm(searchForm, searchRules)
 
     for (const router of getRouters()) {
       const route = {title: router.meta?.name, key: router.name, children: [] as any[]}
@@ -171,11 +168,12 @@ export default defineComponent({
 
     // 方法定义
     const getRoleList = async () => {
-      loading.value = true
-      const data = await AccountApi.getRoleList(pagination.value.current, pagination.value.pageSize)
+      updateRouter({page: pagination.value.current, pageSize: pagination.value.pageSize, name: searchForm.name})
+      tableLoading.value = true
+      const data = await AccountApi.getRoleList(pagination.value.current, pagination.value.pageSize, searchForm.name)
+      tableLoading.value = false
       roleList.value = data.list
-      pagination.value.total = total.value = data.total
-      loading.value = false
+      Object.assign(pagination.value, {total: data.total})
     }
 
     const validateFormAuthority = (authority: string[]): boolean => {
@@ -248,11 +246,13 @@ export default defineComponent({
         if (flag) {
           const {id} = values
           let result: number
+          submitLoading.value = true
           if (id) {
             result = await AccountApi.editRole(id, values.name, authority)
           } else {
             result = await AccountApi.addRole(values.name, authority)
           }
+          submitLoading.value = false
           if (result === 1) {
             onRefresh()
             onCancel()
@@ -328,11 +328,31 @@ export default defineComponent({
       return roleAuthority
     }
 
+    const onSearch = (e: any) => {
+      e.preventDefault()
+      validateSearch().then(async (values) => {
+        if (!values.name) {
+          return
+        }
+        pagination.value.current = 1
+        await getRoleList()
+      }).catch(e => e)
+    }
+
+    const onSearchNameChange = async (e: any) => {
+      e.preventDefault()
+      if (!searchForm.name) {
+        pagination.value.current = 1
+        updateRouter({page: pagination.value.current, pageSize: pagination.value.pageSize})
+        await getRoleList()
+      }
+    }
+
     return {
-      columns, current, total, roleList, loading, pagination,
-      modalVisible, modalTitle, form, rules, options, checkedKeys,
+      columns, roleList, tableLoading, submitLoading, pagination,
+      modalVisible, modalTitle, form, rules, options, checkedKeys, searchForm, validateInfoSearch,
       onRefresh, onCreate, onSubmit, onCancel, onModify, confirmDelete, resetFields, validateInfos,
-      format, onCheck, parseAuthority
+      format, onCheck, parseAuthority, onSearch, onSearchNameChange
     }
   }
 })

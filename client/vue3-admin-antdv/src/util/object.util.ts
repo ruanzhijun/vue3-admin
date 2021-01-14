@@ -17,7 +17,8 @@ export function stripEmptyValue(json: any): any {
   if (!json) {
     return {}
   }
-  const data = {}
+  const data = {} as any
   Object.keys(json).forEach(key => !isEmpty(json[key]) ? Object.assign(data, {[key]: json[key]}) : {})
+  Object.keys(data).forEach(key => Object.assign(data, {[key]: typeof data[key] === 'string' ? data[key].trim() : data[key]}))
   return data
 }

@@ -17,7 +17,7 @@
     </a-form>
   </a-space>
   <div class="line"/>
-  <a-table bordered :data-source="adminList" :columns="columns" :loading="loading" :pagination="pagination">
+  <a-table bordered :data-source="adminList" :columns="columns" :loading="tableLoading" :pagination="pagination">
     <template slot="username" v-slot:username="{text, record}">{{ text }}
       <a-tag color="rgb(0, 187, 34)" v-if="store.getters[GetAdminInfo].username === text">这是您</a-tag>
     </template>
@@ -58,7 +58,7 @@
       </a-form-item>
       <a-form-item :wrapper-col="{span:14,offset:4}">
         <a-space>
-          <a-button type="primary" @click="onSubmit">提交</a-button>
+          <a-button type="primary" @click="onSubmit" :loading="submitLoading">提交</a-button>
           <a-button @click="onCancel">取消</a-button>
         </a-space>
       </a-form-item>
@@ -72,9 +72,9 @@ import {useForm} from '@ant-design-vue/use'
 import {AutoComplete, Button, Checkbox, Col, Empty, Form, Input, Modal, Pagination, Popconfirm, Popover, Row, Space, Switch, Table, Tabs, Tag, Tooltip, Tree} from 'ant-design-vue'
 import {defineComponent, onMounted, reactive, ref} from 'vue'
 import {AccountApi} from '../../api'
-import {DefaultPageSize, GetAdminInfo, MaxPageSize, PageSizeOptions} from '../../constant'
+import {DefaultPageSize, GetAdminInfo} from '../../constant'
 import store from '../../store'
-import {format, queryString, updateRouter} from '../../util'
+import {format, queryString, updateRouter, usePagination} from '../../util'
 
 export default defineComponent({
   components: {
@@ -109,10 +109,10 @@ export default defineComponent({
       {title: '管理员登录名', width: '200px', dataIndex: 'username', slots: {customRender: 'username'}},
       {title: '管理员角色', dataIndex: 'roleNames', slots: {customRender: 'roleNames'}},
       {title: '状态', dataIndex: 'status', width: '70px', slots: {customRender: 'status'}},
-      {title: '账号创建时间', dataIndex: 'createTime', width: '160px', slots: {customRender: 'createTime'}},
-      {title: '最后登录时间', dataIndex: 'lastLoginTime', width: '160px', slots: {customRender: 'lastLoginTime'}},
-      {title: '最后登录ip', dataIndex: 'lastLoginIp', width: '160px'},
-      {title: '操作', dataIndex: 'operate', width: '180px', slots: {customRender: 'operate'}}
+      {title: '账号创建时间', dataIndex: 'createTime', width: '170px', slots: {customRender: 'createTime'}},
+      {title: '最后登录时间', dataIndex: 'lastLoginTime', width: '170px', slots: {customRender: 'lastLoginTime'}},
+      {title: '最后登录ip', dataIndex: 'lastLoginIp', width: '135px'},
+      {title: '操作', dataIndex: 'operate', width: '150px', slots: {customRender: 'operate'}}
     ]
 
     const rules = reactive({
@@ -123,9 +123,7 @@ export default defineComponent({
       roleId: [{required: true, message: '请至少选择一个管理员角色'}]
     })
 
-    const searchRules = reactive({
-      name: [{required: false}]
-    })
+    const searchRules = reactive({name: [{required: false}]})
 
     // 状态
     const adminList = ref([] as any[])
@@ -135,26 +133,11 @@ export default defineComponent({
     const current = ref(parseInt(query && query.page ? query.page.toString() : '0') || 1)
     const total = ref(-1)
     const pageSize = ref(parseInt(query && query.pageSize ? query.pageSize.toString() : '0') || DefaultPageSize)
-    const loading = ref(false)
+    const tableLoading = ref(false)
+    const submitLoading = ref(false)
     const usernameDisabled = ref(false)
     const currentAdminStatus = ref(false)
-    const pagination = ref({
-      current,
-      total,
-      pageSize,
-      showSizeChanger: true,
-      pageSizeOptions: PageSizeOptions,
-      showTotal: (total: number) => `共 ${total} 条`,
-      onChange: (page: number): void => {
-        pagination.value.current = current.value = page
-        getAdminList()
-      },
-      onShowSizeChange: (current: number, size: number): void => {
-        pagination.value.current = 1
-        pagination.value.pageSize = pageSize.value = size
-        getAdminList()
-      }
-    })
+    const pagination = usePagination(() => getAdminList())
 
     // 弹窗
     const modalVisible = ref(false)
@@ -164,23 +147,19 @@ export default defineComponent({
     const form = reactive({id: '', username: '', password: '', status: 'enable', roleId: [] as string[]})
     const searchForm = reactive({name: query && query.name ? query.name.toString() : ''})
     const {resetFields, validate, validateInfos} = useForm(form, rules)
-    const {resetFields: resetSearchFields, validate: validateSearch, validateInfos: validateInfoSearch} = useForm(searchForm, searchRules)
+    const {validate: validateSearch, validateInfos: validateInfoSearch} = useForm(searchForm, searchRules)
 
     // 生命周期
     onMounted(() => getAdminList())
 
     // 方法定义
     const getAdminList = async () => {
-      const query = queryString()
-      pagination.value.current = pagination.value.current || parseInt(query && query.page ? query.page.toString() : '0')
-      pagination.value.pageSize = pagination.value.pageSize || parseInt(query && query.pageSize ? query.pageSize.toString() : '0')
-      pagination.value.pageSize = pagination.value.pageSize > MaxPageSize ? MaxPageSize : pagination.value.pageSize
       updateRouter({page: pagination.value.current, pageSize: pagination.value.pageSize, name: searchForm.name})
-      loading.value = true
+      tableLoading.value = true
       const data = await AccountApi.getAdminList(pagination.value.current, pagination.value.pageSize, searchForm.name)
-      loading.value = false
+      tableLoading.value = false
       adminList.value = data.list
-      pagination.value.total = total.value = data.total
+      Object.assign(pagination.value, {total: data.total})
     }
 
     const onRefresh = () => getAdminList()
@@ -202,11 +181,13 @@ export default defineComponent({
       validate().then(async (values) => {
         const {id} = values
         let result: number
+        submitLoading.value = true
         if (id) {
           result = await AccountApi.editAdmin(id, values.username, values.password, values.roleId, values.status)
         } else {
           result = await AccountApi.addAdmin(values.username, values.password, values.roleId)
         }
+        submitLoading.value = false
         if (result === 1) {
           onRefresh()
           onCancel()
@@ -243,7 +224,12 @@ export default defineComponent({
       currentAdminStatus.value = status === 'enable'
     }
 
-    const confirmDelete = (id: string) => AccountApi.deleteAdmin(id).then(() => onRefresh())
+    const confirmDelete = async (id: string) => {
+      const result = await AccountApi.deleteAdmin(id)
+      if (result === 1) {
+        onRefresh()
+      }
+    }
 
     const onChangeRole = (checkedValue: string[]) => form.roleId = checkedValue
 
@@ -269,10 +255,11 @@ export default defineComponent({
 
     return {
       store, GetAdminInfo,
-      columns, current, total, allRole, currentAdminRole, adminList, loading, pagination, currentAdminStatus, usernameDisabled,
-      modalVisible, modalTitle, form, rules, searchRules, searchForm, options, checkedKeys, onChangeRole,
+      columns, current, total, allRole, currentAdminRole, adminList, tableLoading, submitLoading,
+      pagination, currentAdminStatus, usernameDisabled, modalVisible, modalTitle, form, rules, searchRules,
+      searchForm, options, checkedKeys, onChangeRole,
       onRefresh, onCreate, onSubmit, onCancel, onModify, confirmDelete, resetFields, validateInfos,
-      format, onCheck, onSearch, onSearchNameChange, resetSearchFields, validateSearch, validateInfoSearch
+      format, onCheck, onSearch, onSearchNameChange, validateInfoSearch
     }
   }
 })

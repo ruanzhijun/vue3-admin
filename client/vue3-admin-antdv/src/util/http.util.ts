@@ -2,7 +2,7 @@ import {message} from 'ant-design-vue'
 import axios from 'axios'
 import * as querystring from 'querystring'
 import {TokenKey} from '../constant'
-import {logout, noPermission, stripEmptyValue} from './'
+import {logout, forbidden, stripEmptyValue} from './'
 
 const HttpUtil = axios.create({baseURL: '/api/v1', timeout: 30000})
 
@@ -31,7 +31,7 @@ HttpUtil.interceptors.response.use(
       }
       // 20003-没有权限
       if (res.code === 20003) {
-        return noPermission()
+        return forbidden()
       }
       return null
     } else {

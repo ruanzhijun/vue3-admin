@@ -7,7 +7,7 @@
   <a-empty v-if="globalConfig.length === 0"/>
   <a-tabs v-if="globalConfig.length > 0">
     <a-tab-pane v-for="data in globalConfig" :key="data.module" :tab="data.module">
-      <a-table bordered :data-source="data.config" :columns="columns" :pagination="false" :loading="loading">
+      <a-table bordered :data-source="data.config" :columns="columns" :pagination="false" :loading="tableLoading">
         <template slot="operate" v-slot:operate="{text, record}">
           <a-space>
             <a-button size="small" type="primary" @click="onModify(record.id)">修改</a-button>
@@ -36,7 +36,7 @@
       </a-form-item>
       <a-form-item :wrapper-col="{span:14,offset:4}">
         <a-space>
-          <a-button type="primary" @click="onSubmit">提交</a-button>
+          <a-button type="primary" :loading="submitLoading" @click="onSubmit">提交</a-button>
           <a-button @click="onCancel">取消</a-button>
         </a-space>
       </a-form-item>
@@ -71,7 +71,7 @@ export default defineComponent({
       {title: '配置KEY', dataIndex: 'key', width: '30%'},
       {title: '配置数值', dataIndex: 'value'},
       {title: '配置说明', dataIndex: 'desc'},
-      {title: '操作', dataIndex: 'operate', width: '180px', slots: {customRender: 'operate'}}
+      {title: '操作', dataIndex: 'operate', width: '150px', slots: {customRender: 'operate'}}
     ]
 
     const rules = reactive({
@@ -85,7 +85,8 @@ export default defineComponent({
     // 状态
     const globalConfig = ref<{module: string, config: {id: string, module: string, key: string, value: string, desc: string}[]}[]>([])
     const modules = ref([] as string[])
-    const loading = ref(false)
+    const tableLoading = ref(false)
+    const submitLoading = ref(false)
     const modalVisible = ref(false)
     const moduleInputDisabled = ref(false)
     const keyInputDisabled = ref(false)
@@ -98,11 +99,11 @@ export default defineComponent({
 
     // 方法定义
     const getGlobalConfig = async () => {
-      loading.value = true
+      tableLoading.value = true
       modules.value.length = 0
       globalConfig.value = await SystemApi.getGlobalConfig()
       globalConfig.value.forEach(v => modules.value.push(v.module))
-      loading.value = false
+      tableLoading.value = false
     }
 
     const onCreate = () => {
@@ -119,12 +120,14 @@ export default defineComponent({
       e.preventDefault()
       validate().then(async (values) => {
         let result
+        submitLoading.value = true
         const {id} = values
         if (id) {
           result = await SystemApi.updateGlobalConfig(id, values)
         } else {
           result = await SystemApi.saveGlobalConfig(values)
         }
+        submitLoading.value = false
 
         if (result) {
           await getGlobalConfig()
@@ -159,13 +162,16 @@ export default defineComponent({
       form.desc = desc
     }
 
-    const confirmDelete = (id: string) => {
-      SystemApi.deleteGlobalConfig(id).then(() => onRefresh())
+    const confirmDelete = async (id: string) => {
+      const result = await SystemApi.deleteGlobalConfig(id)
+      if (result === 1) {
+        onRefresh()
+      }
     }
 
     return {
-      columns, rules, loading,
-      globalConfig, modalVisible, modalTitle, form, modules, moduleInputDisabled, keyInputDisabled, validateInfos,
+      columns, rules, tableLoading, submitLoading, globalConfig, modalVisible, modalTitle,
+      form, modules, moduleInputDisabled, keyInputDisabled, validateInfos,
       onRefresh, onCreate, onModify, onSubmit, onCancel, confirmDelete
     }
   }

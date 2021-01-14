@@ -1,4 +1,6 @@
-import {TokenKey} from '../constant'
+import {Ref, UnwrapRef} from '@vue/reactivity'
+import {ref} from 'vue'
+import {DefaultPageSize, MaxPageSize, PageSizeOptions, TokenKey} from '../constant'
 import router from '../router'
 import {stripEmptyValue} from './'
 
@@ -11,9 +13,9 @@ export function logout(): void {
 }
 
 /**
- * 没有权限
+ * 拒绝请求
  */
-export function noPermission(): void {
+export function forbidden(): void {
   router.push({name: '403'})
 }
 
@@ -30,4 +32,43 @@ export function queryString(): any {
  */
 export function updateRouter(data?: any): void {
   router.push(stripEmptyValue({path: router.currentRoute.value.path, query: stripEmptyValue(data)}))
+}
+
+/**
+ * 返回一个分页对象
+ * @param func 页码、页面大小发生改变时的处理函数
+ */
+export function usePagination(func?: Function): Ref<UnwrapRef<{current: number, total: number, pageSize: number, showSizeChanger: boolean, pageSizeOptions: string[], extends: any, showTotal: Function, onChange: Function, onShowSizeChange: Function}>> {
+  const query = queryString()
+  const current = ref(parseInt(query && query.page ? query.page.toString() : '0') || 1)
+  const total = ref(-1)
+  const pageSize = ref(parseInt(query && query.pageSize ? query.pageSize.toString() : '0') || DefaultPageSize)
+
+  function run(): void {
+    pagination.value.current = pagination.value.current || parseInt(query && query.page ? query.page.toString() : '0')
+    pagination.value.pageSize = pagination.value.pageSize || parseInt(query && query.pageSize ? query.pageSize.toString() : '0')
+    pagination.value.pageSize = pagination.value.pageSize > MaxPageSize ? MaxPageSize : pagination.value.pageSize
+    func && func()
+  }
+
+  const pagination = ref({
+    current,
+    total,
+    pageSize,
+    extends: {} as any,
+    showSizeChanger: true,
+    pageSizeOptions: PageSizeOptions,
+    showTotal: (total: number) => `共 ${total} 条`,
+    onChange: (page: number): void => {
+      pagination.value.current = current.value = page
+      run()
+    },
+    onShowSizeChange: (current: number, size: number): void => {
+      pagination.value.current = 1
+      pagination.value.pageSize = pageSize.value = size
+      run()
+    }
+  })
+
+  return pagination
 }

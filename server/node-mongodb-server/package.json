@@ -8,9 +8,9 @@
     "doc": "rimraf doc/ && node scripts/error-code.js && apidoc -i src/ -o doc/"
   },
   "dependencies": {
-    "@nestjs/common": "7.6.4",
-    "@nestjs/core": "7.6.4",
-    "@nestjs/platform-express": "7.6.4",
+    "@nestjs/common": "7.6.5",
+    "@nestjs/core": "7.6.5",
+    "@nestjs/platform-express": "7.6.5",
     "@nestjs/typeorm": "7.1.5",
     "bluebird": "3.7.2",
     "config": "3.3.3",
@@ -29,10 +29,10 @@
   "devDependencies": {
     "@types/bluebird": "3.5.33",
     "@types/mocha": "8.2.0",
-    "@types/node": "14.14.16",
-    "apidoc": "0.25.0",
+    "@types/node": "14.14.20",
+    "apidoc": "0.26.0",
     "cross-env": "7.0.3",
-    "husky": "4.3.6",
+    "husky": "4.3.7",
     "mkdirp": "1.0.4",
     "mocha": "8.2.1",
     "nyc": "15.1.0",
