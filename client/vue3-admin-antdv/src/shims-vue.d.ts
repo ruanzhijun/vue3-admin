@@ -1,5 +1,7 @@
-declare module '*.vue' {
-  import {defineComponent} from 'vue'
-  const component: ReturnType<typeof defineComponent>
-  export default component
+declare module 'package.json' {
+  export interface Package {
+    version: string;
+  }
+
+  export const pkg: Package
 }

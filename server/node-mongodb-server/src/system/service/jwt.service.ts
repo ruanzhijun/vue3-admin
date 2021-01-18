@@ -27,8 +27,8 @@ export class JwtService {
   async encrypt(data: object, options?: jwt.SignOptions): Promise<string> {
     Object.assign(data, {env: config.env})
     return jwt.sign(data, this.privateKey, options || {
-      algorithm: options.algorithm || this.algorithm,
-      expiresIn: options.expiresIn || this.expiresIn
+      algorithm: options ? options.algorithm : this.algorithm,
+      expiresIn: options ? options.expiresIn : this.expiresIn
     })
   }
 
