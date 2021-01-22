@@ -28,6 +28,7 @@
     </template>
     <template slot="createTime" v-slot:createTime="{text}">{{ text ? format(text) : '--' }}</template>
     <template slot="lastLoginTime" v-slot:lastLoginTime="{text}">{{ text ? format(text) : '--' }}</template>
+    <template slot="lastLoginInfo" v-slot:lastLoginInfo="{text, record}">{{ record.lastLoginIp }}<br/><span class="last-login-area">{{ record.lastLoginArea }}</span></template>
     <template slot="operate" v-slot:operate="{text, record}">
       <a-space>
         <div v-permission="'modify-admin'">
@@ -111,7 +112,7 @@ export default defineComponent({
       {title: '状态', dataIndex: 'status', width: '70px', slots: {customRender: 'status'}},
       {title: '账号创建时间', dataIndex: 'createTime', width: '170px', slots: {customRender: 'createTime'}},
       {title: '最后登录时间', dataIndex: 'lastLoginTime', width: '170px', slots: {customRender: 'lastLoginTime'}},
-      {title: '最后登录ip', dataIndex: 'lastLoginIp', width: '135px'},
+      {title: '最后登录ip', dataIndex: 'lastLoginIp', width: '135px', slots: {customRender: 'lastLoginInfo'}},
       {title: '操作', dataIndex: 'operate', width: '150px', slots: {customRender: 'operate'}}
     ]
 
@@ -264,3 +265,9 @@ export default defineComponent({
   }
 })
 </script>
+<style scoped>
+.last-login-area {
+  font-size: 10px;
+  color: #ccc;
+}
+</style>

@@ -12,11 +12,11 @@
             </a-input>
           </a-form-item>
           <a-form-item ref="password" name="password" v-bind="validateInfos.password">
-            <a-input type="password" placeholder="请输入登录密码" v-model:value="form.password" style="width:320px">
+            <a-input-password placeholder="请输入登录密码" v-model:value="form.password" style="width:320px">
               <template v-slot:prefix>
                 <a-lock-outlined-icon style="color:rgba(0,0,0,.25)"/>
               </template>
-            </a-input>
+            </a-input-password>
           </a-form-item>
           <a-form-item>
             <a-button type="primary" :loading="loading" @click="onSubmit">登录</a-button>
@@ -33,10 +33,9 @@ import {LockOutlined, UserOutlined} from '@ant-design/icons-vue'
 import {Button, Form, Input, message} from 'ant-design-vue'
 import {defineComponent, reactive, ref} from 'vue'
 import {useStore} from 'vuex'
-import {useRoute} from 'vue-router'
+import {useRoute, useRouter} from 'vue-router'
 import {AccountApi} from '../../api'
 import {SaveAuthority, SaveAdminInfo, TokenKey} from '../../constant'
-import router from '../../router'
 
 export default defineComponent({
   components: {
@@ -45,11 +44,14 @@ export default defineComponent({
     'a-form': Form,
     'a-form-item': Form.Item,
     'a-input': Input,
+    'a-input-password': Input.Password,
     'a-button': Button
   },
   setup() {
     const store = useStore()
     const route = useRoute()
+    const router = useRouter()
+    const {currentRoute} = router
 
     const rules = reactive({
       username: [{required: true, message: '请输入登录帐号', trigger: ['change', 'blur']}],
@@ -94,7 +96,7 @@ export default defineComponent({
 
     // 监听回车键
     document.onkeydown = function (e) {
-      if (e.code === 'Enter') {
+      if (e.code === 'Enter' && currentRoute.value.path === '/login') {
         onSubmit(e)
       }
     }

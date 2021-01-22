@@ -5,6 +5,7 @@ import * as _ from 'lodash'
 import {ObjectId} from 'mongodb'
 import {MongoRepository} from 'typeorm'
 import {FindManyOptions} from 'typeorm/find-options/FindManyOptions'
+import {qqwry} from '../../common/bootstrap'
 import {DatabaseType} from '../../common/constant'
 import {AdminError} from '../../common/error'
 import {AdminEntity} from '../entity'
@@ -112,7 +113,12 @@ export class AdminService {
       Object.assign(query.where, {username: new RegExp(name)})
     }
     const [list, total] = await this.adminRepository.findAndCount(query)
-    list.forEach(v => delete v.password)
+    list.forEach(v => {
+      delete v.password
+      if (v.lastLoginIp) {
+        Object.assign(v, {lastLoginArea: qqwry.searchIP(v.lastLoginIp).Country})
+      }
+    })
     return {total, list}
   }
 

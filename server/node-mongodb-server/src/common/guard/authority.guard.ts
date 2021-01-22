@@ -9,7 +9,7 @@ import {JwtGuard as BaseGuard} from './jwt.guard'
 
 const staticWhiteList: string[] = [
   '/account/admin/info',
-  '/account/admin/update/password'
+  '/account/admin/password'
 ]
 
 /**

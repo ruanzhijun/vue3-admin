@@ -1,4 +1,5 @@
 /* 分隔线 */
 .line {
     height: 10px;
+    clear: both;
 }

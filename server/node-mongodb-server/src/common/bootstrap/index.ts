@@ -3,6 +3,7 @@ import {Logger} from '../lib'
 
 export * from './tracer'
 export * from './bluebird'
+export * from './qqwry'
 export * from './hook'
 
 class Bootstrap {

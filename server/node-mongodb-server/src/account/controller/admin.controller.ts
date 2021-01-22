@@ -44,7 +44,7 @@ export class AdminController {
   async login(@Headers() headers, @Body() body) {
     const {username, password} = joiValidate(body, {
       username: joi.string().required().strict().trim().error(SystemError.PARAMS_ERROR('管理员登录名不能为空')),
-      password: joi.string().required().strict().trim().error(SystemError.PARAMS_ERROR('管理员登录密码不能为空'))
+      password: joi.string().required().strict().trim().min(6).max(16).error(SystemError.PARAMS_ERROR('管理员登录密码长度为6~16位'))
     })
 
     // 查询管理员
@@ -136,6 +136,7 @@ export class AdminController {
    *          "createTime": 1561130440760,            // 账号创建时间
    *          "lastLoginTime": 1606451461541,         // 最后登录时间
    *          "lastLoginIp": "12.33.43.123",          // 最后登录ip
+   *          "lastLoginArea": "广东省广州市",         // 最后登录地区
    *          "roleNames": ["超级管理员"]              // 管理员角色名
    *       }, {...}]
    *    },
@@ -344,6 +345,39 @@ export class AdminController {
     }
 
     await this.adminService.deleteAdmin(admin)
+    return 1
+  }
+
+  /**
+   * @api {POST} /account/admin/password 管理员修改自己的密码
+   * @apiName accountAdminPassword
+   * @apiGroup account
+   * @apiUse auth
+   * @apiParam {String} password 管理员登录密码(6~16位)
+   * @apiSampleRequest https://vue3.admin.demo.ruanzhijun.cn/api/v1/account/admin/password
+   * @apiSuccessExample 返回例子：
+   * {
+   *    "code": 0,
+   *    "data": 1,                // 修改成功返回1
+   *    "time": 1515082039984
+   * }
+   */
+  @Post('/password')
+  async password(@Headers() headers, @Body() body) {
+    const {adminId, password} = joiValidate(Object.assign({}, headers, body), {
+      adminId: joi.string().length(24).required().strict().trim().error(SystemError.PARAMS_ERROR('请传入正确的管理员id')),
+      password: joi.string().required().strict().trim().min(6).max(16).error(SystemError.PARAMS_ERROR('管理员登录密码长度为6~16位'))
+
+    })
+
+    // 校验管理员是否存在
+    const adminById = await this.adminService.findAdminById(adminId)
+    if (!adminById) {
+      throw AdminError.ADMIN_NOT_EXISTS
+    }
+
+    // 修改密码
+    await this.adminService.updateAdminById(adminId, {password: this.adminService.genAdminPassword(password)})
     return 1
   }
 }

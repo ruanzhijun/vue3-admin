@@ -102,6 +102,14 @@ export class AccountApi {
   }
 
   /**
+   * 管理员修改自己的密码
+   * @param password 管理员登录密码
+   */
+  static async modifyMyPassword(password: string): Promise<number> {
+    return HttpUtil.post('/account/admin/password', {password})
+  }
+
+  /**
    * 删除管理员
    * @param adminId 管理员id
    */
