@@ -1,5 +1,6 @@
 import {Body, Controller, Get, Post} from '@nestjs/common'
 import * as _ from 'lodash'
+import {ApiDescription} from '../../common/decorator'
 import {SystemError} from '../../common/error'
 import {joi, joiValidate} from '../../common/lib'
 import {SystemService} from '../../v5/service'
@@ -7,7 +8,7 @@ import {SystemService} from '../../v5/service'
 /**
  * @apiDefine system 系统模块
  */
-@Controller('/system')
+@Controller('/system/global/config')
 export class GlobalController {
   constructor(
     private readonly systemService: SystemService
@@ -35,7 +36,8 @@ export class GlobalController {
    *    "time": 1515082039984
    * }
    */
-  @Get('/global/config')
+  @Get('')
+  @ApiDescription('获取全局配置')
   async getGlobalConfig() {
     return this.systemService.getGlobalConfig()
   }
@@ -57,7 +59,8 @@ export class GlobalController {
    *    "time": 1515082039984
    * }
    */
-  @Post('/global/config/save')
+  @Post('/save')
+  @ApiDescription('保存全局配置')
   async saveGlobalConfig(@Body() body) {
     const keyErrorMessage = '配置KEY的格式必需只能含有数字、大写字母、_，且_不能在开头'
     const {module, key, value, desc} = joiValidate(body, {
@@ -96,7 +99,8 @@ export class GlobalController {
    *    "time": 1515082039984
    * }
    */
-  @Post('/global/config/update')
+  @Post('/update')
+  @ApiDescription('修改全局配置')
   async updateGlobalConfig(@Body() body) {
     const {id, value, desc} = joiValidate(body, {
       id: joi.string().length(24).required().strict().error(SystemError.PARAMS_ERROR('请传入正确的配置id')),
@@ -126,10 +130,10 @@ export class GlobalController {
    *    "time": 1515082039984
    * }
    */
-  @Post('/global/config/:id')
+  @Post('/delete')
+  @ApiDescription('删除全局配置')
   async deleteGlobalConfig(@Body() body) {
     const {id} = joiValidate(body, {id: joi.string().length(24).required().strict().error(SystemError.PARAMS_ERROR('请传入正确的配置id'))})
-
     await this.systemService.deleteGlobalConfig(id)
     return 1
   }

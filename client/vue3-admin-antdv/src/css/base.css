@@ -3,3 +3,9 @@
     height: 10px;
     clear: both;
 }
+
+/* 文字灰色 */
+.gray-font-color {
+    font-size: 12px;
+    color: #ccc;
+}

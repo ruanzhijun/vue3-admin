@@ -7,7 +7,7 @@ import {Logger} from '../lib'
 /**
  * 封装一个适配器，用于返回的时候包装一层数据，使的数据格式一致
  */
-export class V5Adapter extends ExpressAdapter {
+export class ResponseAdapter extends ExpressAdapter {
   constructor() {
     super(express())
   }

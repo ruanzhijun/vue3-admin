@@ -33,9 +33,10 @@ export class AdminService {
   /**
    * 根据管理员登录名查询管理员
    * @param username 管理员登录名
+   * @param select 需要返回的字段
    */
-  async findAdminByName(username: string): Promise<AdminEntity> {
-    return this.adminRepository.findOne({username})
+  async findAdminByName(username: string, select: (keyof AdminEntity)[] = []): Promise<AdminEntity[]> {
+    return this.adminRepository.find({where: {username: new RegExp(username)}, select})
   }
 
   /**

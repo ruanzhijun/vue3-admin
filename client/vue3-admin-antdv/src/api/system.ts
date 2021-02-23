@@ -38,4 +38,24 @@ export class SystemApi {
   static async deleteGlobalConfig(id: string): Promise<number> {
     return HttpUtil.post('/system/global/config/delete', {id})
   }
+
+  /**
+   * 所有管理接口
+   */
+  static async getUrls(): Promise<any> {
+    return HttpUtil.get('/system/urls')
+  }
+
+  /**
+   * 获取管理员操作日志
+   * @param page 当前页码
+   * @param pageSize 页面大小
+   * @param name 管理员登录名搜索
+   * @param startDate 开始日期
+   * @param endDate 结束日期
+   * @param action 指定动作
+   */
+  static async getLogList(page: number, pageSize: number, name?: string, startDate?: string, endDate?: string, action?: string[]): Promise<any> {
+    return HttpUtil.get('/system/log', {page, pageSize, name, startDate, endDate, 'action[]':action})
+  }
 }

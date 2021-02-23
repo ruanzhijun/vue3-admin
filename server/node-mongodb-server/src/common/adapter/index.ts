@@ -1,1 +1,1 @@
-export * from './v5.adapter'
+export * from './response.adapter'

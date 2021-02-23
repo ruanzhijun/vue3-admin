@@ -1,7 +1,9 @@
 import {JwtService} from './jwt.service'
+import {LogService} from './log.service'
 
 export const Service = [
-  JwtService
+  JwtService,
+  LogService
 ]
 
-export {JwtService}
+export {JwtService, LogService}

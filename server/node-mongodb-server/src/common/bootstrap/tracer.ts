@@ -10,7 +10,11 @@ const options = {
   logger: {
     enable: true,
     instance: Logger
-  }
+  },
+  indexes: [
+    {url: -1},
+    {'headers.adminId': -1}
+  ]
 } as ShareTracerOptions
 
 export default new ShareTracer(options).run()

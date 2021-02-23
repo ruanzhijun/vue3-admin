@@ -101,7 +101,7 @@
       "error",
       "never",
       {
-        "objectsInObjects": true
+        "objectsInObjects": false
       }
     ],
     "no-undef-init": [

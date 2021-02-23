@@ -1,7 +1,6 @@
 const base = require('./webpack.prod.config');
 
 module.exports = Object.assign({}, base, {
-  watch: true,
   mode: 'development',
   optimization: {},
   plugins: [base.plugins[0], base.plugins[1], base.plugins[2]],

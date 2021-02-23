@@ -75,9 +75,17 @@ export class DateUtil {
   /**
    * 把 YYYYMMDD 格式转日期
    * @param str 字符串
+   * @param format 格式
    * 例如： 20181009 => 2018-10-09 00:00:00
    */
   static str2dateStr(str, format = 'YYYY-MM-DD HH:mm:ss'): string {
     return Moment(str, 'YYYYMMDD').format(format)
+  }
+
+  /**
+   * 获取月份
+   */
+  static getMonth(month: number = 0): number {
+    return parseInt(Moment().month(Moment().month() + month).startOf('month').format('YYYYMM'))
   }
 }

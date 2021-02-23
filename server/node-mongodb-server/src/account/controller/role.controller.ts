@@ -1,4 +1,5 @@
 import {Body, Controller, Get, Post, Query} from '@nestjs/common'
+import {ApiDescription} from '../../common/decorator'
 import {AdminError, SystemError} from '../../common/error'
 import {PaginationSchema} from '../../common/joi'
 import {joi, joiValidate} from '../../common/lib'
@@ -35,6 +36,7 @@ export class RoleController {
    * }
    */
   @Post('/add')
+  @ApiDescription('添加角色')
   async addRole(@Body() body) {
     const {name, authority} = joiValidate(body, {
       name: joi.string().trim().required().strict().trim().error(SystemError.PARAMS_ERROR('角色名不能为空')),
@@ -92,13 +94,14 @@ export class RoleController {
    * }
    */
   @Get('/list')
+  @ApiDescription('角色列表')
   async roleList(@Query() query) {
     const {name, page, pageSize} = joiValidate(query, {name: joi.string().trim().strict().trim().error(SystemError.PARAMS_ERROR('角色名不能为空')), ...PaginationSchema})
     return this.roleService.roleList(name, page, pageSize)
   }
 
   /**
-   * @api {GET} /account/role/all 所有角色
+   * @api {GET} /account/role/all 获取所有角色
    * @apiName accountRoleAll
    * @apiGroup account
    * @apiUse auth
@@ -114,6 +117,7 @@ export class RoleController {
    * }
    */
   @Get('/all')
+  @ApiDescription('获取所有角色')
   async allRole(@Query() query) {
     const roleList = await this.roleService.roleList(null, 1, Number.MAX_SAFE_INTEGER)
     return roleList.list.map(v => ({id: v.id, name: v.name}))
@@ -136,6 +140,7 @@ export class RoleController {
    * }
    */
   @Post('/edit')
+  @ApiDescription('编辑角色')
   async editRole(@Body() body) {
     const {roleId, name, authority} = joiValidate(body, {
       roleId: joi.string().length(24).required().strict().trim().error(SystemError.PARAMS_ERROR('请传入正确的角色id')),
@@ -195,6 +200,7 @@ export class RoleController {
    * }
    */
   @Post('/delete')
+  @ApiDescription('删除角色')
   async deleteRole(@Body() body) {
     const {roleId} = joiValidate(body, {roleId: joi.string().length(24).required().strict().trim().error(SystemError.PARAMS_ERROR('请传入正确的角色id'))})
 

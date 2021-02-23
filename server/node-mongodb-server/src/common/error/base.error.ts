@@ -16,7 +16,7 @@ export class BaseError extends HttpException {
     this.code = code
   }
 
-  getResponse(): object {
+  getResponse(): {code: number, message: string} {
     return {code: this.code, message: this.message}
   }
 }

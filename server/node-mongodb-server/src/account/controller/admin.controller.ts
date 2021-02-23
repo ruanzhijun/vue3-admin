@@ -1,5 +1,6 @@
 import {Body, Controller, Get, Headers, Post, Query} from '@nestjs/common'
 import * as _ from 'lodash'
+import {ApiDescription} from '../../common/decorator'
 import {AdminError, SystemError} from '../../common/error'
 import {PaginationSchema} from '../../common/joi'
 import {joi, joiValidate} from '../../common/lib'
@@ -41,6 +42,7 @@ export class AdminController {
    * }
    */
   @Post('/login')
+  @ApiDescription('管理员登录')
   async login(@Headers() headers, @Body() body) {
     const {username, password} = joiValidate(body, {
       username: joi.string().required().strict().trim().error(SystemError.PARAMS_ERROR('管理员登录名不能为空')),
@@ -48,7 +50,7 @@ export class AdminController {
     })
 
     // 查询管理员
-    const admin = await this.adminService.findAdminByName(username)
+    const [admin] = await this.adminService.findAdminByName(username)
     if (!admin) {
       throw AdminError.ADMIN_NOT_EXISTS
     }
@@ -79,7 +81,7 @@ export class AdminController {
 
     // 获取管理员信息
     const adminInfo = await this.adminService.adminInfo(admin)
-
+    Object.assign(headers, {adminId: admin.id.toString()})
     return {token, ...adminInfo}
   }
 
@@ -104,6 +106,7 @@ export class AdminController {
    * }
    */
   @Get('/info')
+  @ApiDescription('管理员信息')
   async info(@Headers() headers) {
     const {adminId} = joiValidate(headers, {adminId: joi.string().length(24).required().strict().trim().error(SystemError.PARAMS_ERROR('请传入正确的管理员id'))})
 
@@ -144,6 +147,7 @@ export class AdminController {
    * }
    */
   @Get('/list')
+  @ApiDescription('管理员列表')
   async adminList(@Query() query) {
     const {name, page, pageSize} = joiValidate(query, {name: joi.string().trim().strict().trim().error(SystemError.PARAMS_ERROR('管理员登录名不能为空')), ...PaginationSchema})
     const {list, total} = await this.adminService.adminList(name, page, pageSize)
@@ -181,6 +185,7 @@ export class AdminController {
    * }
    */
   @Get('/detail')
+  @ApiDescription('管理员详情')
   async adminDetail(@Query() query) {
     const {adminId} = joiValidate(query, {adminId: joi.string().length(24).required().strict().trim().error(SystemError.PARAMS_ERROR('请传入正确的管理员id'))})
 
@@ -218,6 +223,7 @@ export class AdminController {
    * }
    */
   @Post('/add')
+  @ApiDescription('添加管理员')
   async add(@Body() body) {
     const {username, password, roleId} = joiValidate(body, {
       username: joi.string().required().strict().trim().error(SystemError.PARAMS_ERROR('管理员登录名不能为空')),
@@ -262,6 +268,7 @@ export class AdminController {
    * }
    */
   @Post('/edit')
+  @ApiDescription('编辑管理员')
   async edit(@Body() body) {
     const {adminId, username, password, roleId, status} = joiValidate(body, {
       adminId: joi.string().length(24).required().strict().trim().error(SystemError.PARAMS_ERROR('请传入正确的管理员id')),
@@ -330,6 +337,7 @@ export class AdminController {
    * }
    */
   @Post('/delete')
+  @ApiDescription('删除管理员')
   async delete(@Headers() headers, @Body() body) {
     const {adminId} = joiValidate(body, {adminId: joi.string().length(24).required().strict().trim().error(SystemError.PARAMS_ERROR('请传入正确的管理员id'))})
 
@@ -349,7 +357,7 @@ export class AdminController {
   }
 
   /**
-   * @api {POST} /account/admin/password 管理员修改自己的密码
+   * @api {POST} /account/admin/password 修改自己的密码
    * @apiName accountAdminPassword
    * @apiGroup account
    * @apiUse auth
@@ -363,8 +371,9 @@ export class AdminController {
    * }
    */
   @Post('/password')
+  @ApiDescription('修改自己的密码')
   async password(@Headers() headers, @Body() body) {
-    const {adminId, password} = joiValidate(Object.assign({}, headers, body), {
+    const {adminId, password} = joiValidate({...headers, ...body}, {
       adminId: joi.string().length(24).required().strict().trim().error(SystemError.PARAMS_ERROR('请传入正确的管理员id')),
       password: joi.string().required().strict().trim().min(6).max(16).error(SystemError.PARAMS_ERROR('管理员登录密码长度为6~16位'))
 

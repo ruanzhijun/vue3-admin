@@ -35,7 +35,7 @@ for (const route of routes.filter(v => whiteList.indexOf(String(v.name)) === -1)
   for (const child of route.children || []) {
     moduleMapping[String(child.name)] = route.name
     descriptionMapping[String(child.name)] = child.meta?.name
-    for (const {name, url, desc} of child.meta?.authority || []) {
+    for (const {name, url, desc} of (child.meta?.authority || []) as {name: string, url: string, desc: string}[]) {
       componentMapping[name] = url
       pageMapping[name] = child.name
       descriptionMapping[name] = desc

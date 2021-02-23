@@ -1,4 +1,4 @@
-FROM node:14.15.4-alpine as base
+FROM node:14.15.5-alpine as base
 WORKDIR /srv/app
 RUN echo https://mirrors.ustc.edu.cn/alpine/v3.12/main/ > /etc/apk/repositories
 RUN echo https://mirrors.ustc.edu.cn/alpine/v3.12/community/ >> /etc/apk/repositories
@@ -11,7 +11,7 @@ COPY package.json .
 RUN npm i --production --registry http://registry.npm.taobao.org && mv node_modules node_modules_prod
 RUN npm i --registry http://registry.npm.taobao.org
 
-FROM node:14.15.4-alpine as build
+FROM node:14.15.5-alpine as build
 WORKDIR /srv/app
 COPY --from=base /srv/app/node_modules ./node_modules
 COPY --from=base /srv/app/package.json ./package.json
@@ -19,7 +19,7 @@ COPY ./tsconfig.json ./tsconfig.json
 COPY ./src ./src
 RUN npm run build
 
-FROM node:14.15.4-alpine
+FROM node:14.15.5-alpine
 WORKDIR /srv/app
 RUN rm -rf /etc/localtime /etc/timezone
 COPY --from=base /etc/localtime /etc/localtime

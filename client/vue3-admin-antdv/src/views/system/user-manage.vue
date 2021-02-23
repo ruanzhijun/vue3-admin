@@ -28,7 +28,7 @@
     </template>
     <template slot="createTime" v-slot:createTime="{text}">{{ text ? format(text) : '--' }}</template>
     <template slot="lastLoginTime" v-slot:lastLoginTime="{text}">{{ text ? format(text) : '--' }}</template>
-    <template slot="lastLoginInfo" v-slot:lastLoginInfo="{text, record}">{{ record.lastLoginIp }}<br/><span class="last-login-area">{{ record.lastLoginArea }}</span></template>
+    <template slot="lastLoginInfo" v-slot:lastLoginInfo="{text, record}">{{ record.lastLoginIp }}<br/><span class="gray-font-color">{{ record.lastLoginArea }}</span></template>
     <template slot="operate" v-slot:operate="{text, record}">
       <a-space>
         <div v-permission="'modify-admin'">
@@ -73,7 +73,7 @@ import {useForm} from '@ant-design-vue/use'
 import {AutoComplete, Button, Checkbox, Col, Empty, Form, Input, Modal, Pagination, Popconfirm, Popover, Row, Space, Switch, Table, Tabs, Tag, Tooltip, Tree} from 'ant-design-vue'
 import {defineComponent, onMounted, reactive, ref} from 'vue'
 import {AccountApi} from '../../api'
-import {DefaultPageSize, GetAdminInfo} from '../../constant'
+import {GetAdminInfo} from '../../constant'
 import store from '../../store'
 import {format, queryString, updateRouter, usePagination} from '../../util'
 
@@ -133,7 +133,6 @@ export default defineComponent({
     const query = queryString()
     const current = ref(parseInt(query && query.page ? query.page.toString() : '0') || 1)
     const total = ref(-1)
-    const pageSize = ref(parseInt(query && query.pageSize ? query.pageSize.toString() : '0') || DefaultPageSize)
     const tableLoading = ref(false)
     const submitLoading = ref(false)
     const usernameDisabled = ref(false)
@@ -265,9 +264,3 @@ export default defineComponent({
   }
 })
 </script>
-<style scoped>
-.last-login-area {
-  font-size: 10px;
-  color: #ccc;
-}
-</style>

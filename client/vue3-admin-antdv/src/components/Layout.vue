@@ -107,7 +107,7 @@ export default defineComponent({
 
     // 方法定义
     const updateBreadCrumb = () => {
-      pageName.value = currentRoute.value.meta.name
+      pageName.value = String(currentRoute.value.meta.name)
       moduleName.value = findFather(currentRoute.value)
     }
 
@@ -154,7 +154,7 @@ export default defineComponent({
         }
         for (const child of router.children) {
           if (child.name === currentRoute.name) {
-            return router.meta ? router.meta.name.toString() : ''
+            return router.meta ? String(router.meta.name).toString() : ''
           }
         }
       }

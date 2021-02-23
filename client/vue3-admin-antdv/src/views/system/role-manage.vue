@@ -155,7 +155,7 @@ export default defineComponent({
       for (const children of router.children || []) {
         const meta = children.meta || {}
         const child = {title: meta.name, key: children.name, children: [] as any[]}
-        for (const item of meta.authority || []) {
+        for (const item of (meta.authority || []) as any[]) {
           child.children.push({title: item.desc, key: item.name})
         }
         route.children.push(child)

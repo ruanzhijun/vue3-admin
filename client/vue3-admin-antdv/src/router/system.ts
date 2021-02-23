@@ -52,7 +52,9 @@ export const SystemRoute: RouteRecordRaw[] = [{
     component: () => import('../views/system/manage-log.vue'),
     meta: {
       name: '管理日志',
-      authority: []
+      authority: [
+        {name: 'log-list', desc: '查看管理日志', url: ['/system/log', '/system/urls']}
+      ]
     }
   }]
 }]
