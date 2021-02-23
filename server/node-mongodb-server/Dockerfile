@@ -1,7 +1,7 @@
 FROM node:14.15.5-alpine as base
 WORKDIR /srv/app
-RUN echo https://mirrors.ustc.edu.cn/alpine/v3.12/main/ > /etc/apk/repositories
-RUN echo https://mirrors.ustc.edu.cn/alpine/v3.12/community/ >> /etc/apk/repositories
+RUN echo https://mirrors.ustc.edu.cn/alpine/v3.13/main/ > /etc/apk/repositories
+RUN echo https://mirrors.ustc.edu.cn/alpine/v3.13/community/ >> /etc/apk/repositories
 RUN apk update && apk upgrade --available
 RUN apk add --no-cache -U tzdata
 RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
