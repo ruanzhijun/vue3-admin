@@ -24,7 +24,7 @@ module.exports = defineConfig({
     sourcemap: false,
     minify: 'terser',
     terserOptions: {
-      ecma: 2015,
+      ecma: 2020,
       sourceMap: false,
       output: {
         beautify: false,
@@ -39,6 +39,7 @@ module.exports = defineConfig({
     }
   },
   server: {
+    port: 3001,
     proxy: {
       '/api': 'http://127.0.0.1:3002'
     }
