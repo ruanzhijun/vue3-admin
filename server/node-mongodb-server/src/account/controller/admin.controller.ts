@@ -42,7 +42,7 @@ export class AdminController {
    * }
    */
   @Post('/login')
-  @ApiDescription('管理员登录')
+  @ApiDescription('登录')
   async login(@Headers() headers, @Body() body) {
     const {username, password} = joiValidate(body, {
       username: joi.string().required().strict().trim().error(SystemError.PARAMS_ERROR('管理员登录名不能为空')),
@@ -106,7 +106,7 @@ export class AdminController {
    * }
    */
   @Get('/info')
-  @ApiDescription('管理员信息')
+  @ApiDescription('查看信息')
   async info(@Headers() headers) {
     const {adminId} = joiValidate(headers, {adminId: joi.string().length(24).required().strict().trim().error(SystemError.PARAMS_ERROR('请传入正确的管理员id'))})
 
@@ -371,7 +371,7 @@ export class AdminController {
    * }
    */
   @Post('/password')
-  @ApiDescription('修改自己的密码')
+  @ApiDescription('修改密码')
   async password(@Headers() headers, @Body() body) {
     const {adminId, password} = joiValidate({...headers, ...body}, {
       adminId: joi.string().length(24).required().strict().trim().error(SystemError.PARAMS_ERROR('请传入正确的管理员id')),

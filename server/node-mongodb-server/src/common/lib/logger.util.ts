@@ -31,7 +31,7 @@ export class Logger implements LoggerService {
 
   private _init() {
     // 把console绑定到logger
-    const logger = log4js.getLogger('unico.admin.logger')
+    const logger = log4js.getLogger('vue3.admin.logger')
     console.log = logger.trace.bind(logger)
     console.warn = logger.warn.bind(logger)
     console.error = logger.error.bind(logger)
