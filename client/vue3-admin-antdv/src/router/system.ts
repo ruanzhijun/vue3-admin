@@ -41,7 +41,7 @@ export const SystemRoute: RouteRecordRaw[] = [{
       name: '人员管理',
       authority: [
         {name: 'admin-list', desc: '查看管理员', url: ['/account/admin/list']},
-        {name: 'create-admin', desc: '新增管理员', url: ['/account/admin/add']},
+        {name: 'create-admin', desc: '新增管理员', url: ['/account/admin/add', '/account/role/all']},
         {name: 'modify-admin', desc: '修改管理员', url: ['/account/admin/edit', '/account/admin/detail', '/account/role/all']},
         {name: 'delete-admin', desc: '删除管理员', url: ['/account/admin/delete']}
       ]

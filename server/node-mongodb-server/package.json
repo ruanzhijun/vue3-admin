@@ -23,7 +23,7 @@
     "moment-timezone": "0.5.33",
     "mongodb": "3.6.4",
     "reflect-metadata": "0.1.13",
-    "rxjs": "6.6.3",
+    "rxjs": "6.6.6",
     "share-tracer": "0.0.37",
     "typeorm": "0.2.31"
   },

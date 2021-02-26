@@ -4,7 +4,6 @@ import {defineConfig} from 'vite'
 import html from 'vite-plugin-html'
 
 module.exports = defineConfig({
-  publicDir: path.join(__dirname, 'public'),
   plugins: [
     vue(),
     html({minify: true})
