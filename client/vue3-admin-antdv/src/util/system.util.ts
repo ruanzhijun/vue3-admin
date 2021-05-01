@@ -1,8 +1,8 @@
 import {Ref, UnwrapRef} from '@vue/reactivity'
 import {ref} from 'vue'
+import {stripEmptyValue} from '.'
 import {DefaultPageSize, MaxPageSize, PageSizeOptions, TokenKey} from '../constant'
 import router from '../router'
-import {stripEmptyValue} from './'
 
 /**
  * 退出
@@ -44,13 +44,6 @@ export function usePagination(func?: Function): Ref<UnwrapRef<{current: number, 
   const total = ref(-1)
   const pageSize = ref(parseInt(query && query.pageSize ? query.pageSize.toString() : '0') || DefaultPageSize)
 
-  function run(): void {
-    pagination.value.current = pagination.value.current || parseInt(query && query.page ? query.page.toString() : '0')
-    pagination.value.pageSize = pagination.value.pageSize || parseInt(query && query.pageSize ? query.pageSize.toString() : '0')
-    pagination.value.pageSize = pagination.value.pageSize > MaxPageSize ? MaxPageSize : pagination.value.pageSize
-    func && func()
-  }
-
   const pagination = ref({
     current,
     total,
@@ -58,17 +51,24 @@ export function usePagination(func?: Function): Ref<UnwrapRef<{current: number, 
     extends: {} as any,
     showSizeChanger: true,
     pageSizeOptions: PageSizeOptions,
-    showTotal: (total: number) => `共 ${total} 条`,
+    showTotal: (totalNum: number) => `共 ${totalNum} 条`,
     onChange: (page: number): void => {
       pagination.value.current = current.value = page
       run()
     },
-    onShowSizeChange: (current: number, size: number): void => {
+    onShowSizeChange: (currentNum: number, size: number): void => {
       pagination.value.current = 1
       pagination.value.pageSize = pageSize.value = size
       run()
     }
   })
+
+  function run(): void {
+    pagination.value.current = pagination.value.current || parseInt(query && query.page ? query.page.toString() : '0')
+    pagination.value.pageSize = pagination.value.pageSize || parseInt(query && query.pageSize ? query.pageSize.toString() : '0')
+    pagination.value.pageSize = pagination.value.pageSize > MaxPageSize ? MaxPageSize : pagination.value.pageSize
+    func && func()
+  }
 
   return pagination
 }

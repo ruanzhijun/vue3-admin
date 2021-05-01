@@ -1,4 +1,4 @@
-import 'ant-design-vue/dist/antd.min.css'
+import 'ant-design-vue/dist/antd.css'
 import 'babel-polyfill'
 import {createApp} from 'vue'
 import App from './app.vue'

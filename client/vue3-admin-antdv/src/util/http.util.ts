@@ -2,7 +2,7 @@ import {message} from 'ant-design-vue'
 import axios from 'axios'
 import * as querystring from 'querystring'
 import {TokenKey} from '../constant'
-import {logout, forbidden, stripEmptyValue} from './'
+import {logout, forbidden, stripEmptyValue} from '.'
 
 const HttpUtil = axios.create({baseURL: '/api/v1', timeout: 30000})
 
@@ -34,9 +34,8 @@ HttpUtil.interceptors.response.use(
         return forbidden()
       }
       return null
-    } else {
-      return res.data
     }
+    return res.data
   },
   error => {
     message.error(error.message)

@@ -1,0 +1,176 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "extends": "airbnb",
+  "env": {
+    "node": true,
+    "mocha": true,
+    "es2021": true
+  },
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".ts"
+        ]
+      }
+    }
+  },
+  "parserOptions": {
+    "ecmaVersion": 2021,
+    "sourceType": "module"
+  },
+  "globals": {
+    "document": true,
+    "localStorage": true,
+    "ReadonlyRecordable": true
+  },
+  "rules": {
+    "max-depth": [
+      "error",
+      {
+        "max": 3
+      }
+    ],
+    "no-empty-function": [
+      "off"
+    ],
+    "radix": [
+      "off"
+    ],
+    "no-useless-constructor": [
+      "off"
+    ],
+    "semi": [
+      "error",
+      "never"
+    ],
+    "no-shadow": [
+      "error",
+      {
+        "hoist": "never",
+        "allow": [
+          "DatabaseType"
+        ]
+      }
+    ],
+    "lines-between-class-members": [
+      "error",
+      "always",
+      {
+        "exceptAfterSingleLine": true
+      }
+    ],
+    "no-param-reassign": [
+      "error",
+      {
+        "props": false
+      }
+    ],
+    "no-unused-vars": [
+      "off"
+    ],
+    "comma-dangle": [
+      "error",
+      "never"
+    ],
+    "no-unexpected-multiline": [
+      "error"
+    ],
+    "array-bracket-spacing": [
+      "error",
+      "never"
+    ],
+    "no-console": [
+      "error"
+    ],
+    "max-len": [
+      "off"
+    ],
+    "import/no-unresolved": [
+      "off"
+    ],
+    "no-continue": [
+      "off"
+    ],
+    "object-curly-spacing": [
+      "error",
+      "never",
+      {
+        "objectsInObjects": false
+      }
+    ],
+    "no-undef-init": [
+      "error"
+    ],
+    "no-with": [
+      "error"
+    ],
+    "no-void": [
+      "error"
+    ],
+    "no-undefined": [
+      "error"
+    ],
+    "no-underscore-dangle": [
+      "off"
+    ],
+    "import/prefer-default-export": [
+      "off"
+    ],
+    "import/extensions": [
+      "off"
+    ],
+    "global-require": [
+      "off"
+    ],
+    "class-methods-use-this": [
+      "off"
+    ],
+    "no-restricted-syntax": [
+      "off"
+    ],
+    "no-restricted-properties": [
+      "off"
+    ],
+    "no-await-in-loop": [
+      "off"
+    ],
+    "import/order": [
+      "off"
+    ],
+    "brace-style": [
+      "error",
+      "1tbs"
+    ],
+    "no-trailing-spaces": [
+      "error"
+    ],
+    "arrow-parens": [
+      "error",
+      "as-needed"
+    ],
+    "arrow-body-style": [
+      "error",
+      "as-needed"
+    ],
+    "object-curly-newline": [
+      "error",
+      {
+        "multiline": true,
+        "minProperties": 100000
+      }
+    ],
+    "newline-per-chained-call": [
+      "off"
+    ],
+    "object-property-newline": [
+      "error",
+      {
+        "allowMultiplePropertiesPerLine": true
+      }
+    ]
+  }
+}

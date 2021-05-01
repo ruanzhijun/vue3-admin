@@ -3,9 +3,7 @@ import {GetAdminInfo, GetAuthority, SaveAdminInfo, SaveAuthority} from '../const
 
 const store = createStore({
   state: {
-    adminInfo: {
-      username: ''
-    },
+    adminInfo: {username: ''},
     authority: {
       init: false,
       pages: [],

@@ -28,7 +28,7 @@ export class SystemApi {
    * @param config.desc 配置说明
    */
   static async updateGlobalConfig(id: string, config: {value: string, desc: string}): Promise<number> {
-    return HttpUtil.post('/system/global/config/update', Object.assign({id}, config))
+    return HttpUtil.post('/system/global/config/update', {id, ...config})
   }
 
   /**
@@ -56,6 +56,6 @@ export class SystemApi {
    * @param action 指定动作
    */
   static async getLogList(page: number, pageSize: number, name?: string, startDate?: string, endDate?: string, action?: string[]): Promise<any> {
-    return HttpUtil.get('/system/log', {page, pageSize, name, startDate, endDate, 'action[]':action})
+    return HttpUtil.get('/system/log', {page, pageSize, name, startDate, endDate, 'action[]': action})
   }
 }

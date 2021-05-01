@@ -75,7 +75,7 @@ export function hasPermission(page: string): boolean {
   }
   const pages = store.getters[GetAuthority].pages || []
   if (pages.length <= 0) {
-    getRouters().forEach(module => module.children?.forEach(page => pages.push(page.name)))
+    getRouters().forEach(module => module.children?.forEach(p => pages.push(p.name)))
   }
   return pages.indexOf(page) > -1
 }
@@ -99,14 +99,13 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
     }
 
     return next()
-  } else {
-    if (String(to.name).toString() === 'login') {
-      return next()
-    }
-
-    const query = {redirect: `${location.pathname}${location.search}`}
-    return next({name: 'login', query})
   }
+  if (String(to.name).toString() === 'login') {
+    return next()
+  }
+
+  const query = {redirect: `${location.pathname}${location.search}`}
+  return next({name: 'login', query})
 })
 
 export default router
