@@ -80,7 +80,7 @@ export default defineComponent({
         store.commit(SaveAdminInfo, {username: data.username})
         localStorage.setItem(TokenKey, data.token)
         const redirect = String(route.query.redirect || '')
-        if (redirect) {
+        if (!!redirect) {
           // 绝对地址
           if (redirect.includes('http://') || redirect.includes('https://')) {
             window.location.href = redirect
