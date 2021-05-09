@@ -8,8 +8,8 @@ RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 RUN echo "Asia/Shanghai" > /etc/timezone
 RUN apk del tzdata
 COPY package.json .
-RUN npm i --production --registry http://registry.npm.taobao.org && mv node_modules node_modules_prod
-RUN npm i --registry http://registry.npm.taobao.org
+RUN yarn --production --registry http://registry.npm.taobao.org && mv node_modules node_modules_prod
+RUN yarn --registry http://registry.npm.taobao.org
 
 FROM node:16.1.0-alpine3.13 as build
 WORKDIR /srv/app

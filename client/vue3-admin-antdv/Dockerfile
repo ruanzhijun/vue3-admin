@@ -4,7 +4,7 @@ RUN echo https://mirrors.ustc.edu.cn/alpine/v3.13/main/ > /etc/apk/repositories
 RUN echo https://mirrors.ustc.edu.cn/alpine/v3.13/community/ >> /etc/apk/repositories
 RUN apk update && apk upgrade --available
 COPY ./package.json ./package.json
-RUN npm i --registry https://registry.npm.taobao.org
+RUN yarn --registry https://registry.npm.taobao.org
 
 FROM node:16.1.0-alpine3.13 as build
 WORKDIR /srv/app
