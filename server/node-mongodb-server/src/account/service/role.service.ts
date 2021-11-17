@@ -59,6 +59,9 @@ export class RoleService {
     if (name) {
       Object.assign(query.where, {name: new RegExp(name)})
     }
+    console.log(11111)
+    console.log(await this.roleRepository.find())
+    console.log(22222)
     const [list, total] = await this.roleRepository.findAndCount(query)
     for (const role of list) {
       Object.assign(role, {relations: await this.countByRoleId(role.id.toString())})
@@ -73,7 +76,7 @@ export class RoleService {
    * @param authority 角色可以访问的菜单
    */
   async editRole(roleId: string, name: string, authority: any): Promise<void> {
-    await this.roleRepository.findOneAndUpdate({_id: ObjectId(roleId)}, {$set: _.pickBy({name, authority}, _.identity)})
+    await this.roleRepository.findOneAndUpdate({_id: new ObjectId(roleId)}, {$set: _.pickBy({name, authority}, _.identity)})
   }
 
   /**
@@ -96,7 +99,7 @@ export class RoleService {
       throw AdminError.ROLE_CAN_NOT_DELETE
     }
 
-    await this.roleRepository.findOneAndDelete({_id: ObjectId(roleId)})
+    await this.roleRepository.findOneAndDelete({_id: new ObjectId(roleId)})
   }
 
   /**

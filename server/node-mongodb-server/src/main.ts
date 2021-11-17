@@ -11,7 +11,7 @@ export async function bootstrap() {
   const options = {logger: Logger}
   const app = await NestFactory.create(AppModule, new ResponseAdapter(), options)
   app.setGlobalPrefix(config.prefix)
-  await app.listenAsync(config.port)
+  await app.listen(config.port)
   Bootstrap.run()
   const exec = DateUtil.getCurrentTimestamp() - st
   const message = `${config.name} start at ${config.env} env http://127.0.0.1:${config.port} in node ${process.version}, exec：${exec} ms`

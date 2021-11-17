@@ -27,7 +27,7 @@ export class AdminService {
       return
     }
     const role = await this.roleService.createRole('超级管理员')
-    await this.createAdmin('admin', 'admin', [role.id.toString()])
+    await this.createAdmin('admin', 'admin123', [role.id.toString()])
   }
 
   /**
@@ -53,7 +53,7 @@ export class AdminService {
    * @param data 需要修改的数据
    */
   async updateAdminById(adminId: string, data: any): Promise<void> {
-    await this.adminRepository.findOneAndUpdate({_id: ObjectId(adminId)}, {$set: _.pickBy(data, _.identity)})
+    await this.adminRepository.findOneAndUpdate({_id: new ObjectId(adminId)}, {$set: _.pickBy(data, _.identity)})
   }
 
   /**

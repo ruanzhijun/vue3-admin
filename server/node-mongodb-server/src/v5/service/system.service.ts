@@ -46,7 +46,7 @@ export class SystemService {
    * @param desc 配置说明
    */
   async updateGlobalConfig(id: string, value: string, desc: string): Promise<void> {
-    await this.systemConfigRepository.findOneAndUpdate({_id: ObjectId(id)}, {$set: _.pickBy({value, desc}, _.identity)})
+    await this.systemConfigRepository.findOneAndUpdate({_id: new ObjectId(id)}, {$set: _.pickBy({value, desc}, _.identity)})
   }
 
   /**
@@ -54,6 +54,6 @@ export class SystemService {
    * @param id 配置id
    */
   async deleteGlobalConfig(id: string): Promise<void> {
-    await this.systemConfigRepository.findOneAndDelete({_id: ObjectId(id)})
+    await this.systemConfigRepository.findOneAndDelete({_id: new ObjectId(id)})
   }
 }

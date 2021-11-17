@@ -39,7 +39,7 @@ function dbName(url: string): string {
   return url.substr(lastIndexSlash).trim()
 }
 
-MongoClient.connect(config.logdb.url, {useNewUrlParser: true, useUnifiedTopology: true}, (err, client) => {
+MongoClient.connect(config.logdb.url, (err, client) => {
   if (_.isEmpty(err)) {
     Logger.info(`connect to mongodb：${config.logdb.url} success...`)
   } else {
