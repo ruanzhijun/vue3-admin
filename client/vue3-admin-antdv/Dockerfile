@@ -16,5 +16,4 @@ FROM nginx:1.20.2-alpine
 WORKDIR /srv/app
 COPY ./nginx.conf /etc/nginx/nginx.conf
 COPY --from=build /srv/app/dist ./dist
-COPY ./public/chrome.png ./dist/chrome.png
-COPY ./public/browser.html ./dist/browser.html
+COPY ./public/*.png ./dist

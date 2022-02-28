@@ -1,12 +1,12 @@
 import vue from '@vitejs/plugin-vue'
 import * as path from 'path'
 import {defineConfig} from 'vite'
-import html from 'vite-plugin-html'
+import {createHtmlPlugin} from 'vite-plugin-html'
 
 module.exports = defineConfig({
   plugins: [
     vue(),
-    html({minify: true})
+    createHtmlPlugin({minify: true, verbose: false})
   ],
   optimizeDeps: {
     include: ['axios', 'ant-design-vue', 'vue', 'vue-router', 'vuex']

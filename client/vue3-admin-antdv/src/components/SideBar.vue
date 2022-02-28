@@ -21,7 +21,7 @@ import {Button, Layout, Menu} from 'ant-design-vue'
 import {defineComponent, onMounted, ref, watch} from 'vue'
 import {RouteRecordRaw, useRouter} from 'vue-router'
 import {GetAuthority} from '../constant'
-import {getRouters, getModuleByPageName} from '../router'
+import {getModuleByPageName, getRouters} from '../router'
 import store from '../store'
 
 export default defineComponent({

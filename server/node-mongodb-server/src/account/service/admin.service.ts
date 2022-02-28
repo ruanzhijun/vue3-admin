@@ -4,7 +4,7 @@ import * as CryptoJS from 'crypto-js'
 import * as _ from 'lodash'
 import {ObjectId} from 'mongodb'
 import {MongoRepository} from 'typeorm'
-import {FindManyOptions} from 'typeorm/find-options/FindManyOptions'
+import {MongoFindManyOptions} from 'typeorm/find-options/mongodb/MongoFindManyOptions'
 import {qqwry} from '../../common/bootstrap'
 import {DatabaseType} from '../../common/constant'
 import {AdminError} from '../../common/error'
@@ -36,7 +36,7 @@ export class AdminService {
    * @param select 需要返回的字段
    */
   async findAdminByName(username: string, select: (keyof AdminEntity)[] = []): Promise<AdminEntity[]> {
-    return this.adminRepository.find({where: {username: new RegExp(username)}, select})
+    return this.adminRepository.find({where: {username: new RegExp(username)}, select} as MongoFindManyOptions)
   }
 
   /**
@@ -109,7 +109,7 @@ export class AdminService {
       order: {_id: 1},
       skip: (page - 1) * pageSize,
       take: pageSize
-    } as FindManyOptions
+    } as MongoFindManyOptions
     if (name) {
       Object.assign(query.where, {username: new RegExp(name)})
     }
