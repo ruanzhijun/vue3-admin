@@ -1,29 +1,29 @@
 <template>
-  <a-layout id="components-layout-demo-fixed-sider">
-    <a-sideBar/>
-    <a-layout>
+  <Layout id="components-layout-demo-fixed-sider">
+    <SideBar/>
+    <Layout>
       <div class="top">
-        <a-breadcrumb>
-          <a-breadcrumb-item>后台首页</a-breadcrumb-item>
-          <a-breadcrumb-item v-if="moduleName && pageName">{{ moduleName }}</a-breadcrumb-item>
-          <a-breadcrumb-item v-if="moduleName && pageName">{{ pageName }}</a-breadcrumb-item>
-        </a-breadcrumb>
+        <Breadcrumb>
+          <BreadcrumbItem>后台首页</BreadcrumbItem>
+          <BreadcrumbItem v-if="moduleName && pageName">{{ moduleName }}</BreadcrumbItem>
+          <BreadcrumbItem v-if="moduleName && pageName">{{ pageName }}</BreadcrumbItem>
+        </Breadcrumb>
         <div class="user">
-          <a-dropdown :trigger="['click']">
+          <Dropdown :trigger="['click']">
             <a class="ant-dropdown-link" @click="e => e.preventDefault()">{{ username }}
-              <a-caret-down-icon/>
+              <CaretDownOutlined/>
             </a>
             <template v-slot:overlay>
-              <a-menu>
-                <a-menu-item key="logout">
+              <Menu>
+                <MenuItem key="logout">
                   <a @click="onModifyPassword">修改密码</a>
-                </a-menu-item>
-                <a-menu-item key="logout">
+                </MenuItem>
+                <MenuItem key="logout">
                   <a @click="logout">退出登录</a>
-                </a-menu-item>
-              </a-menu>
+                </MenuItem>
+              </Menu>
             </template>
-          </a-dropdown>
+          </Dropdown>
         </div>
       </div>
 
@@ -32,143 +32,120 @@
           <router-view/>
         </div>
       </div>
-    </a-layout>
-  </a-layout>
-  <a-modal v-model:visible="modifyPasswordModalVisible" :title="modifyPasswordModalTitle" :closable="true" :keyboard="false" :maskClosable="false" :footer="null" :destroyOnClose="true" @cancel="onCancel">
-    <a-form :model="modifyPasswordForm" :rules="modifyPasswordRules" :label-col="{span:4}" :wrapper-col="{span:16}">
-      <a-form-item ref="password" label="登录密码" name="password" v-bind="validateInfos.password">
-        <a-input-password placeholder="请输入要修改的登录密码" v-model:value="modifyPasswordForm.password"/>
-      </a-form-item>
-      <a-form-item ref="password2" label="再来一次" name="password2" v-bind="validateInfos.password2">
-        <a-input-password placeholder="请再次输入要修改的登录密码" v-model:value="modifyPasswordForm.password2"/>
-      </a-form-item>
+    </Layout>
+  </Layout>
+  <Modal v-model:visible="modifyPasswordModalVisible" :title="modifyPasswordModalTitle" :closable="true" :keyboard="false" :maskClosable="false" :footer="null" :destroyOnClose="true" @cancel="onCancel">
+    <Form :model="modifyPasswordForm" :rules="modifyPasswordRules" :label-col="{span:4}" :wrapper-col="{span:16}">
+      <FormItem ref="password" label="登录密码" name="password" v-bind="validateInfos.password">
+        <InputPassword placeholder="请输入要修改的登录密码" v-model:value="modifyPasswordForm.password"/>
+      </FormItem>
+      <FormItem ref="password2" label="再来一次" name="password2" v-bind="validateInfos.password2">
+        <InputPassword placeholder="请再次输入要修改的登录密码" v-model:value="modifyPasswordForm.password2"/>
+      </FormItem>
       <div id="password-not-equals" style="display:none;color:#f5222d;position:relative;left:80px">两次输入的密码不一致</div>
-      <a-form-item :wrapper-col="{span:14,offset:4}">
-        <a-space>
-          <a-button type="primary" :loading="submitLoading" @click="onSubmit">提交</a-button>
-          <a-button @click="onCancel">取消</a-button>
-        </a-space>
-      </a-form-item>
-    </a-form>
-  </a-modal>
+      <FormItem :wrapper-col="{span:14,offset:4}">
+        <Space>
+          <Button type="primary" :loading="submitLoading" @click="onSubmit">提交</Button>
+          <Button @click="onCancel">取消</Button>
+        </Space>
+      </FormItem>
+    </Form>
+  </Modal>
 </template>
 
-<script lang="ts">
-import {useForm} from '@ant-design-vue/use'
+<script lang="ts" setup>
 import {CaretDownOutlined} from '@ant-design/icons-vue'
-import {Breadcrumb, Button, Dropdown, Form, Input, Layout, Menu, Modal, Space, message} from 'ant-design-vue'
-import {defineComponent, onMounted, reactive, ref, watch} from 'vue'
+import {Breadcrumb, Button, Dropdown, Form, Input, Layout, Menu, message, Modal, Space} from 'ant-design-vue'
+import {onMounted, reactive, ref, watch} from 'vue'
 import {useRouter} from 'vue-router'
+import {AccountApi} from '../api'
 import {GetAdminInfo, TokenKey} from '../constant'
 import {getRouters} from '../router'
 import store from '../store'
-import {AccountApi} from '../api'
 import {logout} from '../util'
 import SideBar from './SideBar.vue'
 
-export default defineComponent({
-  components: {
-    'a-form': Form,
-    'a-form-item': Form.Item,
-    'a-input-password': Input.Password,
-    'a-button': Button,
-    'a-space': Space,
-    'a-caret-down-icon': CaretDownOutlined,
-    'a-dropdown': Dropdown,
-    'a-breadcrumb': Breadcrumb,
-    'a-modal': Modal,
-    'a-menu': Menu,
-    'a-menu-item': Menu.Item,
-    'a-breadcrumb-item': Breadcrumb.Item,
-    'a-layout': Layout,
-    'a-sideBar': SideBar
-  },
-  setup() {
-    // 变量
-    const router = useRouter()
-    const {currentRoute} = router
-    const moduleName = ref('')
-    const pageName = ref('')
-    const submitLoading = ref(false)
-    const modifyPasswordModalVisible = ref(false)
-    const modifyPasswordModalTitle = ref('')
-    const modifyPasswordForm = reactive({password: '', password2: '', equals: ''})
-    const modifyPasswordRules = reactive({
-      password: [{required: true, message: '请输入要修改的登录密码', trigger: ['change', 'blur']}],
-      password2: [{required: true, message: '请再次输入要修改的登录密码', trigger: ['change', 'blur']}]
-    })
-    const {validate, resetFields, validateInfos} = useForm(modifyPasswordForm, modifyPasswordRules)
+const BreadcrumbItem = Breadcrumb.Item
+const FormItem = Form.Item
+const MenuItem = Menu.Item
+const InputPassword = Input.Password
 
-    // 监听
-    watch(currentRoute, () => updateBreadCrumb())
+const router = useRouter()
+const {currentRoute} = router
+const moduleName = ref('')
+const pageName = ref('')
+const submitLoading = ref(false)
+const modifyPasswordModalVisible = ref(false)
+const modifyPasswordModalTitle = ref('')
+const modifyPasswordForm = reactive({password: '', password2: '', equals: ''})
+const modifyPasswordRules = reactive({
+  password: [{required: true, message: '请输入要修改的登录密码', trigger: ['change', 'blur']}],
+  password2: [{required: true, message: '请再次输入要修改的登录密码', trigger: ['change', 'blur']}]
+})
+const {validate, resetFields, validateInfos} = Form.useForm(modifyPasswordForm, modifyPasswordRules)
 
-    // 生命周期
-    onMounted(() => updateBreadCrumb())
+// 监听
+watch(currentRoute, () => updateBreadCrumb())
 
-    // 方法定义
-    const updateBreadCrumb = () => {
-      pageName.value = String(currentRoute.value.meta.name)
-      moduleName.value = findFather(currentRoute.value)
+// 生命周期
+onMounted(() => updateBreadCrumb())
+
+// 获取管理员登录名
+const {username} = store.getters[GetAdminInfo]
+
+// 方法定义
+const updateBreadCrumb = () => {
+  pageName.value = String(currentRoute.value.meta.name)
+  moduleName.value = findFather(currentRoute.value)
+}
+
+const onModifyPassword = () => {
+  resetFields()
+  modifyPasswordModalVisible.value = true
+  modifyPasswordModalTitle.value = '修改我的登录密码'
+}
+
+const onSubmit = (e: any) => {
+  e.preventDefault()
+  validate().then(async (values) => {
+    let result = 0
+    submitLoading.value = true
+    const {password, password2} = values
+    const tooltip = document.getElementById('password-not-equals') as any
+    if (password !== password2) {
+      tooltip.style.display = 'block'
+    } else {
+      tooltip.style.display = 'none'
+      result = await AccountApi.modifyMyPassword(password)
     }
-
-    const onModifyPassword = () => {
-      resetFields()
-      modifyPasswordModalVisible.value = true
-      modifyPasswordModalTitle.value = '修改我的登录密码'
+    submitLoading.value = false
+    if (result) {
+      message.success('密码修改成功')
+      localStorage.removeItem(TokenKey)
+      router.push({name: 'login'})
     }
+  }).catch(err => err)
+}
 
-    const onSubmit = (e: any) => {
-      e.preventDefault()
-      validate().then(async (values) => {
-        let result = 0
-        submitLoading.value = true
-        const {password, password2} = values
-        const tooltip = document.getElementById('password-not-equals') as any
-        if (password !== password2) {
-          tooltip.style.display = 'block'
-        } else {
-          tooltip.style.display = 'none'
-          result = await AccountApi.modifyMyPassword(password)
-        }
-        submitLoading.value = false
-        if (result) {
-          message.success('密码修改成功')
-          localStorage.removeItem(TokenKey)
-          router.push({name: 'login'})
-        }
-      }).catch(err => err)
+const onCancel = () => {
+  modifyPasswordModalVisible.value = false
+  resetFields()
+}
+
+const findFather = (currentRoute: any): string => {
+  for (const router of getRouters()) {
+    if (!router.children) {
+      continue
     }
-
-    const onCancel = () => {
-      modifyPasswordModalVisible.value = false
-      resetFields()
-    }
-
-    // 获取管理员登录名
-    const {username} = store.getters[GetAdminInfo]
-
-    const findFather = (currentRoute: any): string => {
-      for (const router of getRouters()) {
-        if (!router.children) {
-          continue
-        }
-        for (const child of router.children) {
-          if (child.name === currentRoute.name) {
-            return router.meta ? String(router.meta.name).toString() : ''
-          }
-        }
+    for (const child of router.children) {
+      if (child.name === currentRoute.name) {
+        return router.meta ? String(router.meta.name).toString() : ''
       }
-
-      return ''
-    }
-
-    return {
-      logout, moduleName, pageName, username, submitLoading,
-      modifyPasswordForm, modifyPasswordRules, validateInfos,
-      onModifyPassword, onCancel, onSubmit, modifyPasswordModalVisible, modifyPasswordModalTitle
     }
   }
-})
+
+  return ''
+}
 </script>
 <style>
 body {

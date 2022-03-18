@@ -19,7 +19,7 @@
             </InputPassword>
           </FormItem>
           <FormItem>
-            <Button type="primary" :loading="loading" @click="onSubmit">登录</Button>
+            <Button type="primary" :loading="loading" @click="login">登录</Button>
           </FormItem>
         </Form>
       </div>
@@ -28,14 +28,13 @@
 </template>
 
 <script lang="ts" setup>
-import {useForm} from '@ant-design-vue/use'
 import {LockOutlined, UserOutlined} from '@ant-design/icons-vue'
 import {Button, Form, Input, message} from 'ant-design-vue'
-import {defineComponent, reactive, ref} from 'vue'
-import {useStore} from 'vuex'
+import {reactive, ref} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
+import {useStore} from 'vuex'
 import {AccountApi} from '../../api'
-import {SaveAuthority, SaveAdminInfo, TokenKey} from '../../constant'
+import {SaveAdminInfo, SaveAuthority, TokenKey} from '../../constant'
 
 const FormItem = Form.Item
 const InputPassword = Input.Password
@@ -50,11 +49,10 @@ const rules = reactive({
 })
 
 const form = reactive({username: '', password: ''})
-
 const loading = ref(false)
+const {validate, validateInfos} = Form.useForm(form, rules)
 
-const {validate, validateInfos} = useForm(form, rules)
-const onSubmit = (e: any) => {
+const login = (e: any) => {
   e.preventDefault()
   validate().then(async (values) => {
     loading.value = true
@@ -85,7 +83,7 @@ const onSubmit = (e: any) => {
 // 监听回车键
 document.onkeydown = function (e) {
   if (e.code === 'Enter' && currentRoute.value.path === '/login') {
-    onSubmit(e)
+    login(e)
   }
 }
 </script>

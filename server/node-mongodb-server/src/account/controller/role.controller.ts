@@ -13,7 +13,7 @@ export class RoleController {
   /**
    * 定义一些非法角色名字眼
    */
-  private readonly illegalRoleName: string[] = ['admin', 'administrator', 'super', 'su', 'root', '超', '超级', '管理', '管理员', '超管']
+  private readonly illegalRoleName: string[] = ['admin', 'administrator', 'super', 'su', 'root', '超', '管', '超级', '管理', '管理员', '超管']
 
   constructor(
     private readonly roleService: RoleService
