@@ -16,4 +16,3 @@ FROM nginx:1.22.0-alpine
 WORKDIR /srv/app
 COPY ./nginx.conf /etc/nginx/nginx.conf
 COPY --from=build /srv/app/dist ./dist
-COPY ./public/*.png ./dist
