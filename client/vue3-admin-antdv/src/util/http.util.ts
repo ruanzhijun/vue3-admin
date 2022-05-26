@@ -1,6 +1,6 @@
 import {message} from 'ant-design-vue'
 import axios from 'axios'
-import * as querystring from 'querystring'
+import * as querystring from 'qs'
 import {TokenKey} from '../constant'
 import {logout, forbidden, stripEmptyValue} from '.'
 

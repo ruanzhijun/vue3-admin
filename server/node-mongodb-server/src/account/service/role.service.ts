@@ -3,7 +3,7 @@ import {InjectRepository} from '@nestjs/typeorm'
 import * as _ from 'lodash'
 import {ObjectId} from 'mongodb'
 import {MongoRepository} from 'typeorm'
-import {FindManyOptions} from 'typeorm/find-options/FindManyOptions'
+import {MongoFindManyOptions} from 'typeorm/find-options/mongodb/MongoFindManyOptions'
 import {DatabaseType} from '../../common/constant'
 import {AdminError} from '../../common/error'
 import {AdminEntity, RoleEntity} from '../entity'
@@ -55,13 +55,10 @@ export class RoleService {
       order: {_id: 1},
       skip: (page - 1) * pageSize,
       take: pageSize
-    } as FindManyOptions
+    } as MongoFindManyOptions
     if (name) {
       Object.assign(query.where, {name: new RegExp(name)})
     }
-    console.log(11111)
-    console.log(await this.roleRepository.find())
-    console.log(22222)
     const [list, total] = await this.roleRepository.findAndCount(query)
     for (const role of list) {
       Object.assign(role, {relations: await this.countByRoleId(role.id.toString())})

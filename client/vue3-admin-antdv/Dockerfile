@@ -1,4 +1,4 @@
-FROM node:16.13.2-alpine3.15 as base
+FROM node:18.2.0-alpine3.15 as base
 WORKDIR /srv/app
 RUN echo https://mirrors.ustc.edu.cn/alpine/v3.15/main/ > /etc/apk/repositories
 RUN echo https://mirrors.ustc.edu.cn/alpine/v3.15/community/ >> /etc/apk/repositories
@@ -6,15 +6,14 @@ RUN apk update && apk upgrade --available
 COPY ./package.json ./package.json
 RUN yarn --registry https://registry.npm.taobao.org
 
-FROM node:16.13.2-alpine3.15 as build
+FROM node:18.2.0-alpine3.15 as build
 WORKDIR /srv/app
 COPY --from=base /srv/app/node_modules ./node_modules
 COPY ./ ./
 RUN npm run build
 
-FROM nginx:1.20.2-alpine
+FROM nginx:1.22.0-alpine
 WORKDIR /srv/app
 COPY ./nginx.conf /etc/nginx/nginx.conf
 COPY --from=build /srv/app/dist ./dist
-COPY ./public/chrome.png ./dist/chrome.png
-COPY ./public/browser.html ./dist/browser.html
+COPY ./public/*.png ./dist

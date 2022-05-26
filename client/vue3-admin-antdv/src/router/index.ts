@@ -3,7 +3,6 @@ import {AccountApi} from '../api'
 import Layout from '../components/Layout.vue'
 import {GetAuthority, SaveAdminInfo, SaveAuthority, TokenKey} from '../constant'
 import store from '../store'
-import {OperateRoute} from './operate'
 import {SystemRoute} from './system'
 
 const whiteList = ['login', 'index', '404', '403'] as string[]
@@ -27,7 +26,6 @@ export const routes: RouteRecordRaw[] = [
     }]
   },
   ...SystemRoute,
-  ...OperateRoute
 ]
 
 for (const route of routes.filter(v => whiteList.indexOf(String(v.name)) === -1)) {

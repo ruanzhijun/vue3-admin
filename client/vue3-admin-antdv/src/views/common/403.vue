@@ -1,21 +1,13 @@
 <template>
-  <a-result status="403" title="403" sub-title="没有权限">
+  <Result status="403" title="403" sub-title="没有权限">
     <template v-slot:extra>
-      <a-button type="primary" @click="$router.push({name:'index'})">
+      <Button type="primary" @click="$router.push({name:'index'})">
         Back Home
-      </a-button>
+      </Button>
     </template>
-  </a-result>
+  </Result>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import {Button, Result} from 'ant-design-vue'
-import {defineComponent} from 'vue'
-
-export default defineComponent({
-  components: {
-    'a-button': Button,
-    'a-result': Result
-  }
-})
 </script>
