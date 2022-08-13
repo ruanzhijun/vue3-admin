@@ -8,26 +8,26 @@ import {DatabaseType} from '../../common/constant'
 @Entity('Role')
 export class RoleEntity {
   @ObjectIdColumn()
-    id: ObjectID
+  id: ObjectID
 
   /**
    * 角色名
    */
   @Column()
   @Index('name', {background: true, unique: true})
-    name: string
+  name: string
 
   /**
    * 角色可以访问的菜单、按钮
    */
   @Column()
-    authority: any
+  authority: any
 
   /**
    * 角色生成时间
    */
   @Column()
-    createTime: number
+  createTime: number
 }
 
 export const RoleEntityConnection = TypeOrmModule.forFeature([RoleEntity], DatabaseType.DASHBOARD)

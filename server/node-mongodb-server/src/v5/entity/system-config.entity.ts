@@ -8,32 +8,32 @@ import {DatabaseType} from '../../common/constant'
 @Entity('SystemConfig')
 export class SystemConfigEntity {
   @ObjectIdColumn()
-    id: ObjectID
+  id: ObjectID
 
   /**
    * 模块
    */
   @Column()
-    module: string
+  module: string
 
   /**
    * 配置key
    */
   @Column()
   @Index('key', {unique: true, background: true})
-    key: string
+  key: string
 
   /**
    * 配置值
    */
   @Column()
-    value: any
+  value: any
 
   /**
    * 配置说明
    */
   @Column()
-    desc: string
+  desc: string
 }
 
 export const SystemConfigEntityConnection = TypeOrmModule.forFeature([SystemConfigEntity], DatabaseType.APP)

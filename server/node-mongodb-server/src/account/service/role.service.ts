@@ -32,7 +32,7 @@ export class RoleService {
    * @param roleId 角色id
    */
   async findRoleById(roleId: string): Promise<RoleEntity> {
-    return this.roleRepository.findOne(roleId)
+    return this.roleRepository.findOneBy({_id: new ObjectId(roleId)})
   }
 
   /**
@@ -40,7 +40,7 @@ export class RoleService {
    * @param name 角色名
    */
   async findRoleByName(name: string): Promise<RoleEntity> {
-    return this.roleRepository.findOne({name})
+    return this.roleRepository.findOneBy({name})
   }
 
   /**

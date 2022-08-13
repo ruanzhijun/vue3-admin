@@ -44,7 +44,7 @@ export class AdminService {
    * @param adminId 管理员id
    */
   async findAdminById(adminId: string): Promise<AdminEntity> {
-    return this.adminRepository.findOne(adminId)
+    return this.adminRepository.findOneBy({_id: new ObjectId(adminId)})
   }
 
   /**

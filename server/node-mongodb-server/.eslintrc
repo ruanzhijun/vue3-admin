@@ -3,8 +3,7 @@
   "extends": "airbnb",
   "env": {
     "node": true,
-    "mocha": true,
-    "es2021": true
+    "mocha": true
   },
   "plugins": [
     "@typescript-eslint"
@@ -19,7 +18,7 @@
     }
   },
   "parserOptions": {
-    "ecmaVersion": 2021,
+    "ecmaVersion": 2022,
     "sourceType": "module"
   },
   "globals": {
