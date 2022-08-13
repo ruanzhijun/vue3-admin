@@ -161,7 +161,6 @@ body {
 
 .top {
   margin: 0 0 0 200px;
-  width: 100%;
   background: #fff;
   box-shadow: 0 2px 1px 1px rgba(100, 100, 100, 0.2);
   position: relative;
@@ -177,7 +176,6 @@ body {
 
 .top .user a {
   float: right;
-  margin-right: 200px;
   padding: 15px;
 }
 

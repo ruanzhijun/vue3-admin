@@ -1,8 +1,8 @@
 <template>
   <Space>
     <Form :model="searchForm" layout="inline">
-      <FormItem ref="name" label="管理员" name="name" v-bind="validateInfos.name">
-        <Input v-model:value="searchForm.name" placeholder="搜索管理员" allow-clear @change="onSearchNameChange"/>
+      <FormItem ref="name" label="搜索管理员" name="name" v-bind="validateInfos.name">
+        <Input v-model:value="searchForm.name" placeholder="搜索管理员登录名" allow-clear @change="onSearchNameChange"/>
       </FormItem>
       <FormItem ref="date" label="日期" name="date" v-bind="validateInfos.date">
         <DatePickerRangePicker v-model:value="searchForm.date" @change="onDateChange">
@@ -33,7 +33,7 @@
 
 <script lang="ts" setup>
 import {CalendarOutlined} from '@ant-design/icons-vue'
-import {DatePicker, Form, Select} from 'ant-design-vue'
+import {Button, DatePicker, Table, Form, Input, Select} from 'ant-design-vue'
 import {onMounted, reactive, ref} from 'vue'
 import {SystemApi} from '../../api'
 import {format, queryString, updateRouter, usePagination} from '../../util'
