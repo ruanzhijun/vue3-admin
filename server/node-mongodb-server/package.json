@@ -8,9 +8,9 @@
     "doc": "rimraf doc/ && node scripts/error-code.js && apidoc -i src/ -o doc/"
   },
   "dependencies": {
-    "@nestjs/common": "9.0.9",
-    "@nestjs/core": "9.0.9",
-    "@nestjs/platform-express": "9.0.9",
+    "@nestjs/common": "9.0.11",
+    "@nestjs/core": "9.0.11",
+    "@nestjs/platform-express": "9.0.11",
     "@nestjs/typeorm": "9.0.1",
     "bluebird": "3.7.2",
     "config": "3.3.7",
@@ -20,27 +20,27 @@
     "lib-qqwry": "1.3.2",
     "lodash": "4.17.21",
     "log4js": "6.6.1",
-    "moment-timezone": "0.5.34",
-    "mongodb": "4.8.1",
+    "moment-timezone": "0.5.37",
+    "mongodb": "4.9.1",
     "reflect-metadata": "0.1.13",
     "rxjs": "7.5.6",
     "share-tracer": "0.0.50",
-    "typeorm": "0.3.7"
+    "typeorm": "0.3.9"
   },
   "devDependencies": {
     "@types/bluebird": "3.5.36",
     "@types/mocha": "9.1.1",
-    "@types/node": "18.7.3",
-    "@typescript-eslint/eslint-plugin": "5.33.0",
-    "@typescript-eslint/parser": "5.33.0",
-    "apidoc": "0.52.0",
+    "@types/node": "18.7.15",
+    "@typescript-eslint/eslint-plugin": "5.36.2",
+    "@typescript-eslint/parser": "5.36.2",
+    "apidoc": "0.53.0",
     "cross-env": "7.0.3",
-    "eslint": "8.21.0",
+    "eslint": "8.23.0",
     "eslint-config-airbnb": "19.0.4",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-plugin-import": "2.26.0",
     "eslint-plugin-jsx-a11y": "6.6.1",
-    "eslint-plugin-react": "7.30.1",
+    "eslint-plugin-react": "7.31.7",
     "husky": "8.0.1",
     "mkdirp": "1.0.4",
     "mocha": "10.0.0",
@@ -49,7 +49,7 @@
     "rimraf": "3.0.2",
     "ts-node": "10.9.1",
     "tsconfig-paths": "4.1.0",
-    "typescript": "4.7.4"
+    "typescript": "4.8.2"
   },
   "husky": {
     "hooks": {
