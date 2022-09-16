@@ -53,12 +53,16 @@ export function usePagination(func?: Function): Ref<UnwrapRef<{current: number, 
     pageSizeOptions: PageSizeOptions,
     showTotal: (totalNum: number) => `共 ${totalNum} 条`,
     onChange: (page: number): void => {
-      pagination.value.current = current.value = page
+      current.value = page
+      pagination.value.current = page
+      /* eslint no-use-before-define: "off" */
       run()
     },
     onShowSizeChange: (currentNum: number, size: number): void => {
       pagination.value.current = 1
-      pagination.value.pageSize = pageSize.value = size
+      pageSize.value = size
+      pagination.value.pageSize = size
+      /* eslint no-use-before-define: "off" */
       run()
     }
   })
@@ -67,7 +71,9 @@ export function usePagination(func?: Function): Ref<UnwrapRef<{current: number, 
     pagination.value.current = pagination.value.current || parseInt(query && query.page ? query.page.toString() : '0')
     pagination.value.pageSize = pagination.value.pageSize || parseInt(query && query.pageSize ? query.pageSize.toString() : '0')
     pagination.value.pageSize = pagination.value.pageSize > MaxPageSize ? MaxPageSize : pagination.value.pageSize
-    func && func()
+    if (!!func && typeof func === 'function') {
+      func()
+    }
   }
 
   return pagination

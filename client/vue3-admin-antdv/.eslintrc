@@ -22,11 +22,16 @@
     "sourceType": "module"
   },
   "globals": {
+    "location": true,
     "document": true,
     "localStorage": true,
     "ReadonlyRecordable": true
   },
   "rules": {
+    "no-restricted-globals": [
+      "off",
+      "location"
+    ],
     "max-depth": [
       "error",
       {

@@ -6,7 +6,7 @@ export function isEmpty(value: any): boolean {
   if (typeof value === 'number') {
     return false
   }
-  return value === '' || value === undefined || value === null || value.length <= 0 || Object.keys(value).length <= 0
+  return !value || value === '' || value === null || value.length <= 0 || Object.keys(value).length <= 0
 }
 
 /**

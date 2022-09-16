@@ -25,7 +25,7 @@ export const routes: RouteRecordRaw[] = [
       component: () => import('../views/common/index.vue')
     }]
   },
-  ...SystemRoute,
+  ...SystemRoute
 ]
 
 for (const route of routes.filter(v => whiteList.indexOf(String(v.name)) === -1)) {
