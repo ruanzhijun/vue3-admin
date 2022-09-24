@@ -46,6 +46,14 @@ module.exports = {
   logdb: {
     url: process.env.DASHBOARD_MONGODB_URI
   },
+  // 邮件配置
+  mailConfig: {
+    host: 'smtp.exmail.qq.com',
+    port: 465,
+    alias: 'vue3-admin-antdv-demo',
+    user: 'ruanzhijun@ruanzhijun.cn',
+    pass: '[W-c6x|Vd?a#]MsfX8O:mYt}IzT5ju3P'
+  },
   // log4js配置
   log4js: {
     appenders: {

@@ -9,8 +9,8 @@ const HttpUtil = axios.create({baseURL: '/api/v1', timeout: 30000})
 // Request interceptors
 HttpUtil.interceptors.request.use(config => {
   const token = localStorage.getItem(TokenKey)
-  if (token) {
-    config.headers[TokenKey] = localStorage.getItem(TokenKey)
+  if (token && config && config.headers) {
+    Object.assign(config.headers, {[TokenKey]: localStorage.getItem(TokenKey)})
   }
   return config
 }, error => {

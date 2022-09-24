@@ -2,11 +2,17 @@ import vue from '@vitejs/plugin-vue'
 import * as path from 'path'
 import {defineConfig} from 'vite'
 import {createHtmlPlugin} from 'vite-plugin-html'
+import legacy from '@vitejs/plugin-legacy'
 
 module.exports = defineConfig({
   plugins: [
     vue(),
-    createHtmlPlugin({minify: true, verbose: false})
+    createHtmlPlugin({minify: true, verbose: false}),
+    legacy({
+      targets: ['Chrome 52'],
+      additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
+      modernPolyfills: true
+    })
   ],
   optimizeDeps: {
     include: ['axios', 'ant-design-vue', 'vue', 'vue-router', 'vuex']
@@ -19,7 +25,6 @@ module.exports = defineConfig({
   build: {
     outDir: 'dist',
     cssCodeSplit: true,
-    brotliSize: false,
     sourcemap: false,
     minify: 'terser',
     terserOptions: {
