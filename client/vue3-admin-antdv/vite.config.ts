@@ -9,7 +9,7 @@ module.exports = defineConfig({
     vue(),
     createHtmlPlugin({minify: true, verbose: false}),
     legacy({
-      targets: ['Chrome 52'],
+      targets: ['Chrome 86'],
       additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
       modernPolyfills: true
     })
