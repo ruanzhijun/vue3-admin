@@ -1,31 +1,21 @@
-import {createStore} from 'vuex'
-import {GetAdminInfo, GetAuthority, SaveAdminInfo, SaveAuthority} from '../constant'
+import {createPinia} from 'pinia'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+import type {App} from 'vue'
 
-const store = createStore({
-  state: {
-    adminInfo: {username: ''},
-    authority: {
-      init: false,
-      pages: [],
-      components: []
-    }
-  },
-  getters: {
-    [GetAuthority](state) {
-      return state.authority
-    },
-    [GetAdminInfo](state) {
-      return state.adminInfo
-    }
-  },
-  mutations: {
-    [SaveAuthority](state, authority) {
-      Object.assign(authority, {init: true})
-      state.authority = authority
-    },
-    [SaveAdminInfo](state, adminInfo) {
-      state.adminInfo = adminInfo
-    }
+const store = createPinia()
+
+// 数据持久化
+store.use(piniaPluginPersistedstate)
+
+function setupStore(app: App<Element>) {
+  app.use(store)
+}
+
+const pinia = {
+  install: (app: App) => {
+    app.use(store)
   }
-})
-export default store
+}
+
+export * from './admin'
+export {store, setupStore, pinia}

@@ -61,7 +61,7 @@ import {useRouter} from 'vue-router'
 import {AccountApi} from '../api'
 import {GetAdminInfo, TokenKey} from '../constant'
 import {getRouters} from '../router'
-import store from '../store'
+import {AdminStore} from '../store'
 import {logout} from '../util'
 import SideBar from './SideBar.vue'
 
@@ -70,6 +70,7 @@ const FormItem = Form.Item
 const MenuItem = Menu.Item
 const InputPassword = Input.Password
 
+const store = AdminStore()
 const router = useRouter()
 const {currentRoute} = router
 const moduleName = ref('')
@@ -91,7 +92,7 @@ watch(currentRoute, () => updateBreadCrumb())
 onMounted(() => updateBreadCrumb())
 
 // 获取管理员登录名
-const {username} = store.getters[GetAdminInfo]
+const {username} = store.adminInfo
 
 // 方法定义
 const updateBreadCrumb = () => {

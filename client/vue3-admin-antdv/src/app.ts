@@ -5,7 +5,7 @@ import App from './app.vue'
 import './css/base.css'
 import directive from './directive'
 import router from './router'
-import store from './store'
+import {pinia} from './store'
 
 const app = createApp(App)
 
@@ -13,7 +13,7 @@ const app = createApp(App)
 directive.forEach(v => app.directive(v.name, v.directive))
 
 // 加载store
-app.use(store)
+app.use(pinia)
 
 // 加载路由
 app.use(router)

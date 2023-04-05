@@ -1,6 +1,6 @@
 import {Directive} from 'vue'
 import {GetAuthority} from '../constant'
-import store from '../store'
+import {AdminStore} from '../store'
 import {getAbsoluteLeft, getAbsoluteTop, getBrowserRect} from '../util'
 
 function getTooltipPlacement(tooltip: any): 'topRight' | 'topLeft' {
@@ -12,8 +12,9 @@ function getTooltipPlacement(tooltip: any): 'topRight' | 'topLeft' {
 
 const Permission: Directive = {
   mounted(el: any, binding: any) {
-    const components = store.getters[GetAuthority].components || []
-    if (components.length <= 0 || components.indexOf(binding.value) > -1) {
+    const store = AdminStore()
+    const {components} = store[GetAuthority] as {init: boolean, pages: string[], components: string[]}
+    if (!components || components.length <= 0 || components.indexOf(binding.value) > -1) {
       return
     }
 

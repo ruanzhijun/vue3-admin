@@ -32,13 +32,13 @@ import {LockOutlined, UserOutlined} from '@ant-design/icons-vue'
 import {Button, Form, Input, message} from 'ant-design-vue'
 import {reactive, ref} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
-import {useStore} from 'vuex'
 import {AccountApi} from '../../api'
-import {SaveAdminInfo, SaveAuthority, TokenKey} from '../../constant'
+import {TokenKey} from '../../constant'
+import {AdminStore} from '../../store'
 
 const FormItem = Form.Item
 const InputPassword = Input.Password
-const store = useStore()
+const store = AdminStore()
 const route = useRoute()
 const router = useRouter()
 const {currentRoute} = router
@@ -62,8 +62,8 @@ const login = (e: any) => {
       return
     }
     message.success('登录成功')
-    store.commit(SaveAuthority, data.authority)
-    store.commit(SaveAdminInfo, {username: data.username})
+    store.$patch({authority: data.authority})
+    store.$patch({adminInfo: {username: data.username}})
     localStorage.setItem(TokenKey, data.token)
     const redirect = String(route.query.redirect || '')
     if (!!redirect) {

@@ -2,7 +2,7 @@ import {createRouter, createWebHistory, NavigationGuardNext, RouteLocationNormal
 import {AccountApi} from '../api'
 import Layout from '../components/Layout.vue'
 import {GetAuthority, SaveAdminInfo, SaveAuthority, TokenKey} from '../constant'
-import store from '../store'
+import {AdminStore} from '../store'
 import {SystemRoute} from './system'
 
 const whiteList = ['login', 'index', '404', '403'] as string[]
@@ -71,8 +71,10 @@ export function hasPermission(page: string): boolean {
   if (whiteList.indexOf(page) > -1) {
     return true
   }
-  const pages = store.getters[GetAuthority].pages || []
-  if (pages.length <= 0) {
+
+  const store = AdminStore()
+  const {pages} = store[GetAuthority] as {init: boolean, pages: string[], components: string[]}
+  if (!pages || pages.length <= 0) {
     getRouters().forEach(module => module.children?.forEach(p => pages.push(p.name)))
   }
   return pages.indexOf(page) > -1
@@ -80,6 +82,7 @@ export function hasPermission(page: string): boolean {
 
 // 路由钩子
 router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
+  const store = AdminStore()
   if (to.matched.length <= 0) {
     return next({name: '404'})
   }
@@ -90,10 +93,10 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
       return next({name: '403'})
     }
 
-    if (!store.getters[GetAuthority].init) {
+    if (!store[GetAuthority].init) {
       const data = await AccountApi.adminInfo()
-      store.commit(SaveAuthority, data.authority)
-      store.commit(SaveAdminInfo, {username: data.username})
+      store.$patch(data.authority)
+      store.$patch({username: data.username})
     }
 
     return next()

@@ -23,12 +23,13 @@ import {onMounted, ref, watch} from 'vue'
 import {RouteRecordRaw, useRouter} from 'vue-router'
 import {GetAuthority} from '../constant'
 import {getModuleByPageName, getRouters} from '../router'
-import store from '../store'
+import {AdminStore} from '../store'
 
 const LayoutSider = Layout.Sider
 const MenuItem = Menu.Item
 const MenuSubMenu = Menu.SubMenu
 
+const store = AdminStore()
 const {currentRoute} = useRouter()
 const routers = ref<RouteRecordRaw[]>([])
 const openKeys = ref([''])
@@ -51,8 +52,8 @@ const updateMenuKey = () => {
 
 const filterAsyncRoutes = (): RouteRecordRaw[] => {
   const routers = getRouters()
-  const {pages} = store.getters[GetAuthority] as {urls: string[], pages: string[], components: string[]}
-  if (!pages) {
+  const {pages} = store[GetAuthority] as {init: boolean, pages: string[], components: string[]}
+  if (!pages || pages.length <= 0) {
     return routers
   }
 
