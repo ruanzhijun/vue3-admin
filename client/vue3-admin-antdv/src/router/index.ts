@@ -1,8 +1,9 @@
 import {createRouter, createWebHistory, NavigationGuardNext, RouteLocationNormalized, RouteRecordRaw} from 'vue-router'
 import {AccountApi} from '../api'
 import Layout from '../components/Layout.vue'
-import {GetAuthority, SaveAdminInfo, SaveAuthority, TokenKey} from '../constant'
+import {GetAuthority, TokenKey} from '../constant'
 import {AdminStore} from '../store'
+import {UserRoute} from './user'
 import {SystemRoute} from './system'
 
 const whiteList = ['login', 'index', '404', '403'] as string[]
@@ -25,7 +26,8 @@ export const routes: RouteRecordRaw[] = [
       component: () => import('../views/common/index.vue')
     }]
   },
-  ...SystemRoute
+  ...UserRoute,
+  ...SystemRoute,
 ]
 
 for (const route of routes.filter(v => whiteList.indexOf(String(v.name)) === -1)) {
@@ -73,9 +75,9 @@ export function hasPermission(page: string): boolean {
   }
 
   const store = AdminStore()
-  const {pages} = store[GetAuthority] as {init: boolean, pages: string[], components: string[]}
+  const {pages} = store.authority as {init: boolean, pages: string[], components: string[]}
   if (!pages || pages.length <= 0) {
-    getRouters().forEach(module => module.children?.forEach(p => pages.push(p.name)))
+    getRouters().forEach(module => module.children?.forEach(p => pages.push(String(p.name))))
   }
   return pages.indexOf(page) > -1
 }
@@ -93,10 +95,10 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
       return next({name: '403'})
     }
 
-    if (!store[GetAuthority].init) {
+    if (!store.authority.init) {
       const data = await AccountApi.adminInfo()
-      store.$patch(data.authority)
-      store.$patch({username: data.username})
+      store.$patch({authority: {init: true, components: data.authority.components, pages: data.authority.pages}})
+      store.$patch({adminInfo: {username: data.username}})
     }
 
     return next()

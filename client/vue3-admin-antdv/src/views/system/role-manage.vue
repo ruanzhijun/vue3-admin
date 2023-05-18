@@ -46,21 +46,21 @@
       <div v-if="record.name === '超级管理员'">
         <Space>
           <Tooltip placement="topRight" title="超管角色不能编辑">
-            <Button size="small" disabled="true">编辑</Button>
+            <Button size="small" disabled>编辑</Button>
           </Tooltip>
           <Tooltip placement="topLeft" title="超管角色不能删除">
-            <Button size="small" disabled="true">删除</Button>
+            <Button size="small" disabled>删除</Button>
           </Tooltip>
         </Space>
       </div>
-      <div class="normal" v-if="record.name !== '超级管理员'">
+      <div v-else>
         <Space>
           <div v-permission="'modify-role'">
             <Button size="small" type="primary" @click="onModify(record.id)">编辑</Button>
           </div>
           <div v-permission="'delete-role'">
             <Popconfirm cancelText="取消" okText="确认" title="确认删除吗？" @confirm="() => confirmDelete(record.id)">
-              <Button size="small" type="danger">删除</Button>
+              <Button size="small" danger>删除</Button>
             </Popconfirm>
           </div>
         </Space>

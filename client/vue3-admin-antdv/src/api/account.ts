@@ -3,11 +3,11 @@ import {HttpUtil} from '../util'
 export class AccountApi {
   /**
    * 登录
-   * @param username 登录账号
+   * @param email 登录邮箱
    * @param password 登录密码
    */
-  static async login(username: string, password: string): Promise<{token: string, username: string, authority: {urls: string[], pages: string[], components: string[]}}> {
-    return HttpUtil.post('/account/admin/login', {username, password})
+  static async login(email: string, password: string): Promise<{token: string, username: string, authority: {urls: string[], pages: string[], components: string[]}}> {
+    return HttpUtil.post('/account/admin/login', {email, password})
   }
 
   /**
@@ -75,7 +75,7 @@ export class AccountApi {
    * 管理员详情
    * @param adminId 管理员id
    */
-  static async getAdminDetail(adminId: string): Promise<{id: string, username: string, status: string, createTime: number, lastLoginTime: number, roleNames: string[], roleId: string[]}> {
+  static async getAdminDetail(adminId: string): Promise<{id: string, email: string, username: string, status: string, createTime: number, lastLoginTime: number, roleNames: string[], roleId: string[]}> {
     return HttpUtil.get('/account/admin/detail', {adminId})
   }
 

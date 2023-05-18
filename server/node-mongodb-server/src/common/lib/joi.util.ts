@@ -11,7 +11,7 @@ export function joiValidate(param: any, schema: any, options?: any) {
   if (error) {
     throw error
   }
-  return value
+  return Object.freeze(value)
 }
 
 export {joi}

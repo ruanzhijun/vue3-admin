@@ -4,10 +4,10 @@
       <h2>vue3-admin-antdv管理后台</h2>
       <div class="login-form-container">
         <Form :rules="rules" :model="form">
-          <FormItem ref="username" name="username" v-bind="validateInfos.username">
-            <Input placeholder="请输入登录帐号" v-model:value="form.username" style="width:320px">
+          <FormItem ref="email" name="email" v-bind="validateInfos.email">
+            <Input placeholder="请输入登录邮箱" v-model:value="form.email" style="width:320px">
               <template v-slot:prefix>
-                <UserOutlined style="color:rgba(0,0,0,.25)"/>
+                <MailOutlined style="color:rgba(0,0,0,.25)"/>
               </template>
             </Input>
           </FormItem>
@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts" setup>
-import {LockOutlined, UserOutlined} from '@ant-design/icons-vue'
+import {LockOutlined, MailOutlined} from '@ant-design/icons-vue'
 import {Button, Form, Input, message} from 'ant-design-vue'
 import {reactive, ref} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
@@ -44,11 +44,11 @@ const router = useRouter()
 const {currentRoute} = router
 
 const rules = reactive({
-  username: [{required: true, message: '请输入登录帐号', trigger: ['change', 'blur']}],
+  email: [{required: true, message: '请输入登录邮箱', trigger: ['change', 'blur']}],
   password: [{required: true, message: '请输入登录密码', trigger: ['change', 'blur']}]
 })
 
-const form = reactive({username: '', password: ''})
+const form = reactive({email: '', password: ''})
 const loading = ref(false)
 const {validate, validateInfos} = Form.useForm(form, rules)
 
@@ -56,7 +56,7 @@ const login = (e: any) => {
   e.preventDefault()
   validate().then(async (values) => {
     loading.value = true
-    const data = await AccountApi.login(values.username, values.password)
+    const data = await AccountApi.login(values.email, values.password)
     loading.value = false
     if (!data) {
       return

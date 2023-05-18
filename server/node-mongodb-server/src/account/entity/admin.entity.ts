@@ -11,10 +11,17 @@ export class AdminEntity {
   id: ObjectID
 
   /**
-   * 管理员登录名
+   * 管理员登录邮箱
    */
   @Column()
-  @Index('username', {background: true, unique: true})
+  @Index('email', {background: true, unique: true})
+  email: string
+
+  /**
+   * 管理员用户名
+   */
+  @Column()
+  @Index('username')
   username: string
 
   /**

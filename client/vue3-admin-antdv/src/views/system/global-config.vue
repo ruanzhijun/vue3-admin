@@ -13,7 +13,7 @@
             <Space>
               <Button size="small" type="primary" @click="onModify(record.id)">修改</Button>
               <Popconfirm cancelText="取消" okText="确认" title="确认删除吗？" @confirm="() => confirmDelete(record.id)">
-                <Button size="small" type="danger">删除</Button>
+                <Button size="small" danger>删除</Button>
               </Popconfirm>
             </Space>
           </template>

@@ -26,7 +26,6 @@
           </Dropdown>
         </div>
       </div>
-
       <div class="main-container">
         <div class="sub-container">
           <router-view/>
@@ -59,7 +58,7 @@ import {Breadcrumb, Button, Dropdown, Form, Input, Layout, Menu, message, Modal,
 import {onMounted, reactive, ref, watch} from 'vue'
 import {useRouter} from 'vue-router'
 import {AccountApi} from '../api'
-import {GetAdminInfo, TokenKey} from '../constant'
+import {TokenKey} from '../constant'
 import {getRouters} from '../router'
 import {AdminStore} from '../store'
 import {logout} from '../util'

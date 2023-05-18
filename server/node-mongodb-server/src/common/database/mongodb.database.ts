@@ -1,17 +1,17 @@
-import {TypeOrmModule} from '@nestjs/typeorm'
+import { TypeOrmModule } from '@nestjs/typeorm'
 import * as Bluebird from 'bluebird'
 import * as config from 'config'
 import * as fs from 'fs'
 import * as _ from 'lodash'
-import {MongoClient} from 'mongodb'
+import { MongoClient } from 'mongodb'
 import * as path from 'path'
-import {DatabaseType} from '../constant'
-import {Logger} from '../lib'
+import { DatabaseType } from '../constant'
+import { Logger } from '../lib'
 
 let database = null
-const {dbs} = config.mongodb
+const { dbs } = config.mongodb
 
-function getEntities(db: {name: string}): string[] {
+function getEntities(db: { name: string }): string[] {
   const basePath = path.resolve(`${__dirname}/../../`)
   const filter = ['app.module.ts', 'app.module.js', 'apidoc.ts', 'apidoc.js', 'common', 'main.ts', 'main.js']
   const modules = fs.readdirSync(basePath).filter(v => filter.indexOf(v) === -1)
@@ -26,7 +26,7 @@ export const MongodbDatabase = dbs.map(db => TypeOrmModule.forRoot({
   url: db.url,
   name: db.name,
   synchronize: true,
-  loggerLevel: 'info',
+  autoLoadEntities: true,
   entities: getEntities(db)
 }))
 
@@ -39,15 +39,13 @@ function dbName(url: string): string {
   return url.substr(lastIndexSlash).trim()
 }
 
-MongoClient.connect(config.logdb.url, (err, client) => {
-  if (_.isEmpty(err)) {
-    Logger.info(`connect to mongodb：${config.logdb.url} success...`)
-  } else {
-    Logger.error(`connect to mongodb：${config.logdb.url} error:`, err)
-  }
-
-  database = client.db(dbName(config.logdb.url))
-})
+async function connectMongodb(): Promise<void> {
+  const client = new MongoClient(config.logdb.url);
+  await client.connect();
+  database = client.db(dbName(config.logdb.url));
+  Logger.info(`connect to mongodb：${config.logdb.url} success...`)
+}
+connectMongodb()
 
 class Mongodb {
   private readonly collection
@@ -70,18 +68,8 @@ class Mongodb {
    * @param query 查询条件
    * @param options 查询选项
    */
-  async find(query?, options?) {
-    return new Bluebird((resolve, reject) => {
-      this.collection.find(query, options).toArray((err, items) => {
-        if (err) {
-          reject(err)
-          return
-        }
-        resolve(items)
-      })
-    }).catch(e => {
-      Logger.error(e)
-    })
+  async find(query?, options?): Promise<any> {
+    return this.collection.find(query, options).toArray()
   }
 
   /**

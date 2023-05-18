@@ -9,13 +9,13 @@ module.exports = defineConfig({
     vue(),
     createHtmlPlugin({minify: true, verbose: false}),
     legacy({
-      targets: ['Chrome 86'],
+      targets: ['Chrome 100'],
       additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
       modernPolyfills: true
     })
   ],
   optimizeDeps: {
-    include: ['axios', 'ant-design-vue', 'vue', 'vue-router', 'vuex']
+    include: ['axios', 'ant-design-vue', 'vue', 'vue-router', 'pinia', 'crypto-js']
   },
   resolve: {
     alias: {

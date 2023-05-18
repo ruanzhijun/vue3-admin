@@ -4,6 +4,7 @@ import * as CryptoJS from 'crypto-js'
 import * as _ from 'lodash'
 import {ObjectId} from 'mongodb'
 import {MongoRepository} from 'typeorm'
+import {MongoFindOneOptions} from 'typeorm/find-options/mongodb/MongoFindOneOptions'
 import {MongoFindManyOptions} from 'typeorm/find-options/mongodb/MongoFindManyOptions'
 import {qqwry} from '../../common/bootstrap'
 import {DatabaseType} from '../../common/constant'
@@ -27,16 +28,16 @@ export class AdminService {
       return
     }
     const role = await this.roleService.createRole('超级管理员')
-    await this.createAdmin('admin', 'admin123', [role.id.toString()])
+    await this.createAdmin('admin@admin.com', '超级管理员', 'admin123', [role.id.toString()])
   }
 
   /**
-   * 根据管理员登录名查询管理员
-   * @param username 管理员登录名
+   * 根据管理员登邮箱查询管理员
+   * @param email 管理员登录邮箱
    * @param select 需要返回的字段
    */
-  async findAdminByName(username: string, select: (keyof AdminEntity)[] = []): Promise<AdminEntity[]> {
-    return this.adminRepository.find({where: {username: new RegExp(username)}, select} as MongoFindManyOptions)
+  async findAdminByEmail(email: string, select: (keyof AdminEntity)[] = []): Promise<AdminEntity> {
+    return this.adminRepository.findOne({where: {email}, select} as MongoFindOneOptions)
   }
 
   /**
@@ -57,18 +58,21 @@ export class AdminService {
   }
 
   /**
-   * 生成一个管理员
-   * @param username 管理员登录名
+   * 添加一个管理员
+   * @param email 管理员登录邮箱
+   * @param username 管理员用户名
    * @param password 管理员密码
    * @param roleId 角色id
    */
-  async createAdmin(username: string, password: string, roleId: string[]): Promise<AdminEntity> {
+  async createAdmin(email: string, username: string, password: string, roleId: string[]): Promise<AdminEntity> {
+    const createTime = Date.now()
     return this.adminRepository.save({
+      email,
       username,
       password: this.genAdminPassword(password),
       status: 'enable',
       roleId,
-      createTime: Date.now()
+      createTime
     })
   }
 
@@ -125,10 +129,10 @@ export class AdminService {
 
   /**
    * 生成管理员密码
-   * @param password 管理员原密码
+   * @param email 管理员登录邮箱
    */
   genAdminPassword(password: string): string {
-    return CryptoJS.AES.encrypt(password, CryptoJS.MD5(password).toString()).toString().trim()
+    return CryptoJS.AES.encrypt(password, CryptoJS.MD5(password + password + password).toString()).toString().trim()
   }
 
   /**
@@ -137,7 +141,7 @@ export class AdminService {
    * @param password 输入的管理员密码
    */
   checkAdminPassword(admin: AdminEntity, password: string): boolean {
-    const key = CryptoJS.MD5(password).toString()
+    const key = CryptoJS.MD5(password + password + password).toString()
     const serverPassword = CryptoJS.AES.decrypt(admin.password, key).toString(CryptoJS.enc.Utf8).trim()
     return serverPassword === password
   }

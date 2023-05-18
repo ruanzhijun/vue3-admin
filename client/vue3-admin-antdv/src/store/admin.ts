@@ -5,7 +5,9 @@ export const AdminStore = defineStore({
   id: 'admin',
   persist: true,
   state: () => ({
-    adminInfo: {username: ''},
+    adminInfo: {
+      username: ''
+    },
     authority: {
       init: false,
       pages: [],

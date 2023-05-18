@@ -23,14 +23,14 @@ export class AdminController {
    * @api {POST} /account/admin/login 管理员登录
    * @apiName accountAdminLogin
    * @apiGroup account
-   * @apiParam {String} username 登录名
+   * @apiParam {String} email 登录邮箱
    * @apiParam {String} password 登录密码
    * @apiSampleRequest https://vue3.admin.demo.ruanzhijun.cn/api/v1/account/admin/login
    * @apiSuccessExample 返回例子：
    * {
    *    "code": 0,
    *    "data": {
-   *        "username": "admin",        // 登录名
+   *        "username": "admin",        // 用户名
    *        "authority": {              // 可以访问的菜单、按钮
    *           "pages":["role-manager","global-config"],
    *           "components":["create-role","delete-admin"],
@@ -44,13 +44,13 @@ export class AdminController {
   @Post('/login')
   @ApiDescription('登录')
   async login(@Headers() headers, @Body() body) {
-    const {username, password} = joiValidate(body, {
-      username: joi.string().required().strict().trim().error(SystemError.PARAMS_ERROR('管理员登录名不能为空')),
+    const {email, password} = joiValidate(body, {
+      email: joi.string().email().required().strict().trim().error(SystemError.PARAMS_ERROR('管理员登录邮箱格式错误')),
       password: joi.string().required().strict().trim().min(6).max(16).error(SystemError.PARAMS_ERROR('管理员登录密码长度为6~16位'))
     })
 
     // 查询管理员
-    const [admin] = await this.adminService.findAdminByName(username)
+    const admin = await this.adminService.findAdminByEmail(email)
     if (!admin) {
       throw AdminError.ADMIN_NOT_EXISTS
     }
@@ -95,7 +95,7 @@ export class AdminController {
    * {
    *    "code": 0,
    *    "data": {
-   *        "username": "admin",        // 登录名
+   *        "username": "admin",        // 用户名
    *        "authority": {              // 可以访问的菜单、按钮
    *           "pages":["role-manager","global-config"],
    *           "components":["create-role","delete-admin"],
@@ -134,7 +134,8 @@ export class AdminController {
    *       "total": 100,
    *       "list": [{
    *          "id": "5facb544a2d8ba24b032563a",       // 管理员id
-   *          "username": "admin",                    // 管理员登录名
+   *          "email": "admin@admin.com",             // 管理员登录邮箱
+   *          "username": "admin",                    // 管理员用户名
    *          "status": "enable",                     // 管理员状态(enable-正常;frozen-冻结)
    *          "createTime": 1561130440760,            // 账号创建时间
    *          "lastLoginTime": 1606451461541,         // 最后登录时间
@@ -225,7 +226,7 @@ export class AdminController {
   @Post('/add')
   @ApiDescription('添加管理员')
   async add(@Body() body) {
-    const {username, password, roleId} = joiValidate(body, {
+    const {email, username, password, roleId} = joiValidate(body, {
       username: joi.string().required().strict().trim().error(SystemError.PARAMS_ERROR('管理员登录名不能为空')),
       password: joi.string().required().strict().trim().min(6).max(16).error(SystemError.PARAMS_ERROR('管理员登录密码长度为6~16位')),
       roleId: joi.array().unique().items(joi.string().required().length(24).strict().trim()).min(1).error(SystemError.PARAMS_ERROR('请传入正确的角色id'))

@@ -12,6 +12,7 @@ export const SystemRoute: RouteRecordRaw[] = [{
     name: 'global-config',
     component: () => import('../views/system/global-config.vue'),
     meta: {
+      keep: true,
       name: '全局配置',
       authority: [
         {name: 'config-list', desc: '查看配置', url: ['/system/global/config']},
@@ -25,6 +26,7 @@ export const SystemRoute: RouteRecordRaw[] = [{
     name: 'role-manage',
     component: () => import('../views/system/role-manage.vue'),
     meta: {
+      keep: true,
       name: '角色管理',
       authority: [
         {name: 'role-list', desc: '查看角色', url: ['/account/role/list']},
@@ -38,6 +40,7 @@ export const SystemRoute: RouteRecordRaw[] = [{
     name: 'user-manage',
     component: () => import('../views/system/user-manage.vue'),
     meta: {
+      keep: true,
       name: '人员管理',
       authority: [
         {name: 'admin-list', desc: '查看管理员', url: ['/account/admin/list']},
@@ -51,6 +54,7 @@ export const SystemRoute: RouteRecordRaw[] = [{
     name: 'manage-log',
     component: () => import('../views/system/manage-log.vue'),
     meta: {
+      keep: true,
       name: '管理日志',
       authority: [
         {name: 'log-list', desc: '查看管理日志', url: ['/system/log', '/system/urls']}

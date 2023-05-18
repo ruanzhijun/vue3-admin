@@ -8,8 +8,8 @@
   <div class="line"/>
   <Space>
     <Form :model="searchForm" layout="inline">
-      <FormItem ref="name" label="管理员登录名" name="name" v-bind="validateInfoSearch.name">
-        <Input v-model:value="searchForm.name" placeholder="搜索管理员登录名" allow-clear @change="onSearchNameChange"/>
+      <FormItem ref="name" label="管理员用户名" name="name" v-bind="validateInfoSearch.name">
+        <Input v-model:value="searchForm.name" placeholder="搜索管理员用户名" allow-clear @change="onSearchNameChange"/>
       </FormItem>
       <FormItem>
         <Button type="primary" @click="onSearch">查询</Button>
@@ -18,8 +18,8 @@
   </Space>
   <div class="line"/>
   <Table bordered :data-source="adminList" :columns="columns" :loading="tableLoading" :pagination="pagination">
-    <template slot="username" v-slot:username="{text, record}">{{ text }}
-      <Tag color="rgb(0, 187, 34)" v-if="store.getters[GetAdminInfo].username === text">这是您</Tag>
+    <template slot="email" v-slot:email="{text, record}">{{ text }}
+      <Tag color="rgb(0, 187, 34)" v-if="store.adminInfo.username === record.username">这是您</Tag>
     </template>
     <template slot="roleNames" v-slot:roleNames="{text, record}">{{ text.join('、') }}</template>
     <template slot="status" v-slot:status="{text, record}">
@@ -35,23 +35,26 @@
           <Button size="small" type="primary" @click="onModify(record.id)">编辑</Button>
         </div>
         <div v-permission="'delete-admin'">
-          <Popconfirm cancelText="取消" okText="确认" title="确认删除吗？" @confirm="() => confirmDelete(record.id)">
-            <Button size="small" type="danger">删除</Button>
-          </Popconfirm>
+          <Tooltip placement="topRight" title="不能删除自己" v-if="store.adminInfo.username === record.username">
+            <Button size="small" disabled>删除</Button>
+          </Tooltip>
+          <Popconfirm v-else cancelText="取消" okText="确认" title="确认删除吗？" @confirm="() => confirmDelete(record.id)">
+              <Button size="small" danger>删除</Button>
+            </Popconfirm>
         </div>
       </Space>
     </template>
   </Table>
-  <Modal v-model:visible="modalVisible" :title="modalTitle" :closable="true" :keyboard="false" :maskClosable="false" :footer="null" :destroyOnClose="true" :width="600" @cancel="onCancel">
+  <Modal v-model:visible="modalVisible" :title="modalTitle" :closable="true" :keyboard="false" :maskClosable="false" :footer="null" :destroyOnClose="true" :width="700" @cancel="onCancel">
     <Form :model="form" :rules="rules" :label-col="{span:5}" :wrapper-col="{span:16}">
       <Input v-model:value="form.id" style="display:none"/>
-      <FormItem ref="name" label="管理员登录名" name="username" v-bind="validateInfos.username">
-        <Input v-model:value="form.username" :disabled="usernameDisabled" placeholder="请输入管理员登录名"/>
+      <FormItem ref="name" label="管理员登录邮箱" name="email" v-bind="validateInfos.email">
+        <Input v-model:value="form.email" :disabled="emailDisabled" placeholder="请输入管理员登邮箱"/>
       </FormItem>
       <FormItem ref="password" label="管理员登密码" name="password" v-bind="validateInfos.password">
         <Input type="password" v-model:value="form.password" placeholder="请输入管理员登密码"/>
       </FormItem>
-      <FormItem ref="status" label="管理员状态" name="status" v-bind="validateInfos.status" v-if="usernameDisabled">
+      <FormItem ref="status" label="管理员状态" name="status" v-bind="validateInfos.status" v-if="emailDisabled">
         <Switch checked-children="正常" un-checked-children="冻结" v-model:checked="currentAdminStatus" @change="onCheck"/>
       </FormItem>
       <FormItem ref="roleId" label="管理员角色" name="roleId" v-bind="validateInfos.roleId">
@@ -69,19 +72,20 @@
 
 
 <script lang="ts" setup>
-import {Button, Checkbox, Form, Input, Modal, Popconfirm, Space, Switch, Table, Tag} from 'ant-design-vue'
+import {Button, Checkbox, Form, Input, Modal, Popconfirm, Space, Switch, Table, Tag, Tooltip} from 'ant-design-vue'
 import {onMounted, reactive, ref} from 'vue'
 import {AccountApi} from '../../api'
-import {GetAdminInfo} from '../../constant'
-import store from '../../store'
+import {AdminStore} from '../../store'
 import {queryString, format, updateRouter, usePagination} from '../../util'
 
+const store = AdminStore()
 const FormItem = Form.Item
 const CheckboxGroup = Checkbox.Group
 
 // 变量
 const columns = [
-  {title: '管理员登录名', width: '200px', dataIndex: 'username', slots: {customRender: 'username'}},
+  {title: '管理员登录邮箱', width: '250px', dataIndex: 'email', slots: {customRender: 'email'}},
+  {title: '管理员用户名', width: '120px', dataIndex: 'username'},
   {title: '管理员角色', dataIndex: 'roleNames', slots: {customRender: 'roleNames'}},
   {title: '状态', dataIndex: 'status', width: '70px', slots: {customRender: 'status'}},
   {title: '账号创建时间', dataIndex: 'createTime', width: '170px', slots: {customRender: 'createTime'}},
@@ -92,7 +96,7 @@ const columns = [
 
 const rules = reactive({
   id: [{required: false}],
-  username: [{required: true, message: '请输入管理员登录名', trigger: ['change', 'blur']}],
+  email: [{required: true, message: '请输入管理员登录邮箱', trigger: ['change', 'blur']}],
   password: [{required: false, message: '请输入管理员登录密码', trigger: ['change', 'blur']}],
   status: [{required: false}],
   roleId: [{required: true, message: '请至少选择一个管理员角色'}]
@@ -109,7 +113,7 @@ const current = ref(parseInt(query && query.page ? query.page.toString() : '0') 
 const total = ref(-1)
 const tableLoading = ref(false)
 const submitLoading = ref(false)
-const usernameDisabled = ref(false)
+const emailDisabled = ref(false)
 const currentAdminStatus = ref(false)
 const pagination = usePagination(() => getAdminList())
 
@@ -118,7 +122,7 @@ const modalVisible = ref(false)
 const modalTitle = ref('')
 const options = ref([] as any[])
 const checkedKeys = ref([] as string[])
-const form = reactive({id: '', username: '', password: '', status: 'enable', roleId: [] as string[]})
+const form = reactive({id: '', email: '', password: '', status: 'enable', roleId: [] as string[]})
 const searchForm = reactive({name: query && query.name ? query.name.toString() : ''})
 const {resetFields, validate, validateInfos} = Form.useForm(form, rules)
 const {validate: validateSearch, validateInfos: validateInfoSearch} = Form.useForm(searchForm, searchRules)
@@ -141,7 +145,7 @@ const onRefresh = () => getAdminList()
 const onCreate = async () => {
   resetFields()
   modalVisible.value = true
-  usernameDisabled.value = false
+  emailDisabled.value = false
   currentAdminStatus.value = true
   modalTitle.value = '新增管理员'
   rules.password[0].required = true
@@ -187,12 +191,12 @@ const onModify = async (adminId: string) => {
   allRole.value = serverRoleList.map(v => ({label: v.name, value: v.id}))
   currentAdminRole.value = data.roleId || []
   modalVisible.value = true
-  usernameDisabled.value = true
+  emailDisabled.value = true
   modalTitle.value = '编辑管理员'
   rules.password[0].required = false
-  const {username, status} = data
+  const {email, status} = data
   form.id = adminId
-  form.username = username
+  form.email = email
   form.status = status
   form.roleId = data.roleId
   currentAdminStatus.value = status === 'enable'
