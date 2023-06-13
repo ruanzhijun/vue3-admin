@@ -1,7 +1,7 @@
+import './css/base.css'
 import 'babel-polyfill'
 import {createApp} from 'vue'
 import App from './app.vue'
-import './css/base.css'
 import directive from './directive'
 import router from './router'
 import {pinia} from './store'
