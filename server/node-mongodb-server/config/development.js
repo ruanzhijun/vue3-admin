@@ -22,12 +22,14 @@ module.exports = {
     jwt: {
       enable: true,
       whitelist: [
+        '/system/captcha',
         '/account/admin/login'
       ]
     },
     authority: {
       enable: true,
       whitelist: [
+        '/system/captcha',
         '/account/admin/login'
       ]
     }

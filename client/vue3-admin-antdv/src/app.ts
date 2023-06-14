@@ -1,4 +1,5 @@
-import './css/base.css'
+import './assets/css/base.css'
+import 'ant-design-vue/dist/reset.css'
 import 'babel-polyfill'
 import {createApp} from 'vue'
 import App from './app.vue'

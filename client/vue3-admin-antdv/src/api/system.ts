@@ -2,6 +2,13 @@ import {HttpUtil} from '../util'
 
 export class SystemApi {
   /**
+   * 获取图片验证码
+   */
+  static async getCaptcha(): Promise<{captcha: string, uuid: string}> {
+    return HttpUtil.get('/system/captcha')
+  }
+
+  /**
    * 获取全局配置
    */
   static async getGlobalConfig(): Promise<{module: string, config: {id: string, module: string, key: string, value: string, desc: string}[]}[]> {
