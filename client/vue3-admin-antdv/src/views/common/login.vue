@@ -12,7 +12,7 @@
             </Input>
           </FormItem>
           <FormItem ref="password" name="password" v-bind="validateInfos.password">
-            <InputPassword placeholder="请输入登录密码" v-model:value="form.password" style="width:320px">
+            <InputPassword placeholder="请输入登录密码" v-model:value="form.password" style="width:320px" readonly onfocus="this.removeAttribute('readonly');" onblur="this.setAttribute('readonly',true);">
               <template v-slot:prefix>
                 <LockOutlined style="color:rgba(0,0,0,.25)"/>
               </template>
