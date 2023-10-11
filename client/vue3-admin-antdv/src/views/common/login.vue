@@ -5,7 +5,7 @@
       <div class="login-form-container">
         <Form :rules="rules" :model="form">
           <FormItem ref="email" name="email" v-bind="validateInfos.email">
-            <Input placeholder="请输入登录邮箱" v-model:value="form.email" style="width:320px">
+            <Input placeholder="请输入登录邮箱" v-model:value="form.email" style="width:320px" readonly onfocus="this.removeAttribute('readonly');" onblur="this.setAttribute('readonly',true);">
               <template v-slot:prefix>
                 <MailOutlined style="color:rgba(0,0,0,.25)"/>
               </template>

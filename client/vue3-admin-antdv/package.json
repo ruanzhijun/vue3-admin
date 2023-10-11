@@ -12,7 +12,7 @@
     "@pansy/watermark": "2.3.0",
     "@vitejs/plugin-legacy": "4.0.4",
     "@vue/reactivity": "3.3.4",
-    "ant-design-vue": "4.0.0-rc.5",
+    "ant-design-vue": "4.0.0-rc.6",
     "axios": "1.4.0",
     "babel-polyfill": "6.26.0",
     "crypto-js": "4.1.1",
