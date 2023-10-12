@@ -5,9 +5,11 @@ export class AccountApi {
    * 登录
    * @param email 登录邮箱
    * @param password 登录密码
+   * @param uuid 登录验证码标识
+   * @param captcha 登录验证码
    */
-  static async login(email: string, password: string): Promise<{token: string, username: string, authority: {urls: string[], pages: string[], components: string[]}}> {
-    return HttpUtil.post('/account/admin/login', {email, password})
+  static async login(email: string, password: string, uuid: string, captcha: string): Promise<{token: string, username: string, authority: {urls: string[], pages: string[], components: string[]}}> {
+    return HttpUtil.post('/account/admin/login', {email, password, uuid, captcha})
   }
 
   /**
@@ -81,12 +83,12 @@ export class AccountApi {
 
   /**
    * 添加管理员
-   * @param username 管理员登录名
-   * @param password 管理员登录密码
+   * @param email 管理员名登录邮箱
+   * @param username 管理员名称
    * @param roleId 角色id
    */
-  static async addAdmin(username: string, password: string, roleId: string[]): Promise<number> {
-    return HttpUtil.post('/account/admin/add', {username, password, roleId})
+  static async addAdmin(email: string, username: string, roleId: string[]): Promise<number> {
+    return HttpUtil.post('/account/admin/add', {email, username, roleId})
   }
 
   /**

@@ -49,10 +49,10 @@
     <Form :model="form" :rules="rules" :label-col="{span:5}" :wrapper-col="{span:16}">
       <Input v-model:value="form.id" style="display:none"/>
       <FormItem ref="name" label="管理员登录邮箱" name="email" v-bind="validateInfos.email">
-        <Input v-model:value="form.email" :disabled="emailDisabled" placeholder="请输入管理员登邮箱"/>
+        <Input v-model:value="form.email" :disabled="emailDisabled" placeholder="请输入管理员登邮箱" readonly onfocus="this.removeAttribute('readonly');" onblur="this.setAttribute('readonly',true);"/>
       </FormItem>
-      <FormItem ref="password" label="管理员登密码" name="password" v-bind="validateInfos.password">
-        <Input type="password" v-model:value="form.password" placeholder="请输入管理员登密码"/>
+      <FormItem ref="name" label="管理员名称" name="email" v-bind="validateInfos.username">
+        <Input v-model:value="form.username" placeholder="管理员名称" readonly onfocus="this.removeAttribute('readonly');" onblur="this.setAttribute('readonly',true);"/>
       </FormItem>
       <FormItem ref="status" label="管理员状态" name="status" v-bind="validateInfos.status" v-if="emailDisabled">
         <Switch checked-children="正常" un-checked-children="冻结" v-model:checked="currentAdminStatus" @change="onCheck"/>
@@ -85,7 +85,7 @@ const CheckboxGroup = Checkbox.Group
 // 变量
 const columns = [
   {title: '管理员登录邮箱', width: '250px', dataIndex: 'email', slots: {customRender: 'email'}},
-  {title: '管理员用户名', width: '120px', dataIndex: 'username'},
+  {title: '管理员名称', width: '120px', dataIndex: 'username'},
   {title: '管理员角色', dataIndex: 'roleNames', slots: {customRender: 'roleNames'}},
   {title: '状态', dataIndex: 'status', width: '70px', slots: {customRender: 'status'}},
   {title: '账号创建时间', dataIndex: 'createTime', width: '170px', slots: {customRender: 'createTime'}},
@@ -97,7 +97,7 @@ const columns = [
 const rules = reactive({
   id: [{required: false}],
   email: [{required: true, message: '请输入管理员登录邮箱', trigger: ['change', 'blur']}],
-  password: [{required: false, message: '请输入管理员登录密码', trigger: ['change', 'blur']}],
+  username: [{required: true, message: '请输入管理员名称', trigger: ['change', 'blur']}],
   status: [{required: false}],
   roleId: [{required: true, message: '请至少选择一个管理员角色'}]
 })
@@ -122,7 +122,7 @@ const modalVisible = ref(false)
 const modalTitle = ref('')
 const options = ref([] as any[])
 const checkedKeys = ref([] as string[])
-const form = reactive({id: '', email: '', password: '', status: 'enable', roleId: [] as string[]})
+const form = reactive({id: '', email: '', username:'', password: '', status: 'enable', roleId: [] as string[]})
 const searchForm = reactive({name: query && query.name ? query.name.toString() : ''})
 const {resetFields, validate, validateInfos} = Form.useForm(form, rules)
 const {validate: validateSearch, validateInfos: validateInfoSearch} = Form.useForm(searchForm, searchRules)
@@ -148,7 +148,6 @@ const onCreate = async () => {
   emailDisabled.value = false
   currentAdminStatus.value = true
   modalTitle.value = '新增管理员'
-  rules.password[0].required = true
   const serverRoleList = await AccountApi.getAllRole()
   allRole.value = serverRoleList.map(v => ({label: v.name, value: v.id}))
   currentAdminRole.value = []
@@ -163,7 +162,7 @@ const onSubmit = (e: any) => {
     if (id) {
       result = await AccountApi.editAdmin(id, values.username, values.password, values.roleId, values.status)
     } else {
-      result = await AccountApi.addAdmin(values.username, values.password, values.roleId)
+      result = await AccountApi.addAdmin(values.email, values.username, values.roleId)
     }
     submitLoading.value = false
     if (result === 1) {
@@ -179,7 +178,6 @@ const onCheck = (selectedKeys: string[]) => {
 
 const onCancel = () => {
   form.status = 'enable'
-  rules.password[0].required = false
   modalVisible.value = false
   checkedKeys.value = []
   resetFields()
@@ -193,10 +191,10 @@ const onModify = async (adminId: string) => {
   modalVisible.value = true
   emailDisabled.value = true
   modalTitle.value = '编辑管理员'
-  rules.password[0].required = false
-  const {email, status} = data
+  const {email, status, username} = data
   form.id = adminId
   form.email = email
+  form.username = username
   form.status = status
   form.roleId = data.roleId
   currentAdminStatus.value = status === 'enable'

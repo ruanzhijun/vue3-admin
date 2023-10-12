@@ -35,7 +35,7 @@ export const AdminError = {
   /**
    * 管理员重复(20009)
    */
-  ADMIN_NAME_DUPLICATE: new BaseError(20009, '管理员重复'),
+  ADMIN_DUPLICATE: new BaseError(20009, '管理员重复'),
   /**
    * 角色名重复(20010)
    */
@@ -55,5 +55,9 @@ export const AdminError = {
   /**
    * 不能删除自己(20014)
    */
-  CAN_NOT_DELETE_MYSELF: new BaseError(20014, '不能删除自己')
+  CAN_NOT_DELETE_MYSELF: new BaseError(20014, '不能删除自己'),
+  /**
+   * 登录验证码错误(20015)
+   */
+  CAPTCHA_ERROR: new BaseError(20015, '登录验证码错误')
 }

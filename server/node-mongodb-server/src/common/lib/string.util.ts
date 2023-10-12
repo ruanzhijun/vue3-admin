@@ -132,4 +132,17 @@ export class StringUtil {
   static firstUpperCase(str: string): string {
     return `${(str || '').substring(0, 1).toUpperCase()}${(str || '').substring(1)}`
   }
+
+  /**
+   * 生成指定数量的随机字符串
+   * @param length 字符串长度
+   */
+  static random(length:number):string {
+    let str = '';
+    const $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678~!@#$%^&*,.';
+      for (let i = 0; i < length; i++) {
+        str += $chars.charAt(Math.floor(Math.random() * $chars.length));
+      }
+      return str;
+    }
 }

@@ -25,8 +25,8 @@ export class CaptchaService {
    * @param input 输入的验证码
    */
   varifyCaptcha(uuid: string, input: string): boolean {
-    const hasItem = this.memoryCache.hasItem(uuid)
+    const hasItem = this.memoryCache.retrieveItemValue(uuid) === input
     this.memoryCache.removeItem(uuid)
-    return hasItem && this.memoryCache.retrieveItemValue(uuid) === input
+    return hasItem
   }
 }

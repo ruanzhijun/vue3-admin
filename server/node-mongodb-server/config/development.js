@@ -54,7 +54,7 @@ module.exports = {
     port: 465,
     alias: 'vue3-admin-antdv-demo',
     user: 'ruanzhijun@ruanzhijun.cn',
-    pass: '[W-c6x|Vd?a#]MsfX8O:mYt}IzT5ju3P'
+    pass: 'woshiQinShuYi12345'
   },
   // log4js配置
   log4js: {

@@ -1,10 +1,11 @@
 import {Body, Controller, Get, Headers, Post, Query} from '@nestjs/common'
+import * as config from 'config'
 import * as _ from 'lodash'
 import {ApiDescription} from '../../common/decorator'
 import {AdminError, SystemError} from '../../common/error'
 import {PaginationSchema} from '../../common/joi'
-import {joi, joiValidate} from '../../common/lib'
-import {JwtService} from '../../system/service'
+import {joi, joiValidate, MailUtil, StringUtil} from '../../common/lib'
+import {CaptchaService, JwtService} from '../../system/service'
 import {AdminService, RoleService} from '../service'
 
 /**
@@ -15,7 +16,8 @@ export class AdminController {
   constructor(
     private readonly adminService: AdminService,
     private readonly roleService: RoleService,
-    private readonly jwtService: JwtService
+    private readonly jwtService: JwtService,
+    private readonly captchaService: CaptchaService
   ) {
   }
 
@@ -25,6 +27,8 @@ export class AdminController {
    * @apiGroup account
    * @apiParam {String} email 登录邮箱
    * @apiParam {String} password 登录密码
+   * @apiParam {String} uuid 登录验证码标识
+   * @apiParam {String} captcha 登录验证码
    * @apiSampleRequest https://vue3.admin.demo.ruanzhijun.cn/api/v1/account/admin/login
    * @apiSuccessExample 返回例子：
    * {
@@ -44,10 +48,17 @@ export class AdminController {
   @Post('/login')
   @ApiDescription('登录')
   async login(@Headers() headers, @Body() body) {
-    const {email, password} = joiValidate(body, {
+    const {email, password, uuid, captcha} = joiValidate(body, {
       email: joi.string().email().required().strict().trim().error(SystemError.PARAMS_ERROR('管理员登录邮箱格式错误')),
-      password: joi.string().required().strict().trim().min(6).max(16).error(SystemError.PARAMS_ERROR('管理员登录密码长度为6~16位'))
+      password: joi.string().required().strict().trim().min(6).max(16).error(SystemError.PARAMS_ERROR('管理员登录密码长度为6~16位')),
+      uuid: joi.string().required().strict().trim().min(36).max(36).error(AdminError.CAPTCHA_ERROR),
+      captcha: joi.string().required().strict().trim().min(4).max(4).error(AdminError.CAPTCHA_ERROR)
     })
+
+    // 验证图片验证码
+    if (!this.captchaService.varifyCaptcha(uuid, captcha)) {
+      throw AdminError.CAPTCHA_ERROR
+    }
 
     // 查询管理员
     const admin = await this.adminService.findAdminByEmail(email)
@@ -212,8 +223,7 @@ export class AdminController {
    * @apiName accountAdminAdd
    * @apiGroup account
    * @apiUse auth
-   * @apiParam {String} username 管理员登录名
-   * @apiParam {String} password 管理员登录密码(6~16位)
+   * @apiParam {String} email 管理员登录名=邮箱
    * @apiParam {Array} roleId 角色id
    * @apiSampleRequest https://vue3.admin.demo.ruanzhijun.cn/api/v1/account/admin/add
    * @apiSuccessExample 返回例子：
@@ -226,9 +236,9 @@ export class AdminController {
   @Post('/add')
   @ApiDescription('添加管理员')
   async add(@Body() body) {
-    const {email, username, password, roleId} = joiValidate(body, {
-      username: joi.string().required().strict().trim().error(SystemError.PARAMS_ERROR('管理员登录名不能为空')),
-      password: joi.string().required().strict().trim().min(6).max(16).error(SystemError.PARAMS_ERROR('管理员登录密码长度为6~16位')),
+    const {email, username, roleId} = joiValidate(body, {
+      email: joi.string().email().required().strict().trim().error(SystemError.PARAMS_ERROR('管理员登录邮箱格式错误')),
+      username: joi.string().required().strict().trim().error(SystemError.PARAMS_ERROR('管理员名称不能为空')),
       roleId: joi.array().unique().items(joi.string().required().length(24).strict().trim()).min(1).error(SystemError.PARAMS_ERROR('请传入正确的角色id'))
     })
 
@@ -241,12 +251,17 @@ export class AdminController {
     }
 
     // 验证管理员是否重复
-    const admin = await this.adminService.findAdminByName(username)
+    const admin = await this.adminService.findAdminByEmail(email)
     if (admin) {
-      throw AdminError.ADMIN_NAME_DUPLICATE
+      throw AdminError.ADMIN_DUPLICATE
     }
 
-    await this.adminService.createAdmin(username, password, roleId)
+    const password = StringUtil.random(16)
+    await this.adminService.createAdmin(email, username, password, roleId)
+    let content = `尊敬的${username}：<br>&nbsp;&nbsp;&nbsp;&nbsp;很高兴邀请您共同管理vue3-admin-antdv-demo管理系统`
+    content += `<br>&nbsp;&nbsp;&nbsp;&nbsp;以下是系统的登录地址：${config.self}`
+    content += `<br>&nbsp;&nbsp;&nbsp;&nbsp;您的登录邮箱/密码为：${email} / ${password}，请妥善保管。`
+    MailUtil.send('vue3-admin-antdv-demo管理系统邀请', content, email)
     return 1
   }
 
@@ -256,8 +271,7 @@ export class AdminController {
    * @apiGroup account
    * @apiUse auth
    * @apiParam {String} adminId 管理员id
-   * @apiParam {String} [username] 管理员登录名
-   * @apiParam {String} [password] 管理员登录密码(6~16位)
+   * @apiParam {String} [username] 管理员登名称
    * @apiParam {Array} [roleId] 角色id
    * @apiParam {String="enable","frozen"} [status] 角色状态(enable-正常;frozen-冻结)
    * @apiSampleRequest https://vue3.admin.demo.ruanzhijun.cn/api/v1/account/admin/edit
@@ -271,23 +285,24 @@ export class AdminController {
   @Post('/edit')
   @ApiDescription('编辑管理员')
   async edit(@Body() body) {
-    const {adminId, username, password, roleId, status} = joiValidate(body, {
+    const {adminId, username, roleId, status} = joiValidate(body, {
       adminId: joi.string().length(24).required().strict().trim().error(SystemError.PARAMS_ERROR('请传入正确的管理员id')),
       username: joi.string().strict().trim().error(SystemError.PARAMS_ERROR('管理员登录名不能为空')),
-      password: joi.string().strict().trim().min(6).max(16).error(SystemError.PARAMS_ERROR('管理员登录密码长度为6~16位')),
       roleId: joi.array().unique().items(joi.string().required().length(24).strict().trim()).min(1).error(SystemError.PARAMS_ERROR('请传入正确的角色id')),
       status: joi.string().valid('enable', 'frozen').strict().trim().error(SystemError.PARAMS_ERROR('请传入正确的状态'))
     })
 
     // 必须要有数据才执行修改
-    if (!username && !password && !roleId) {
+    if (!username && !roleId) {
       throw SystemError.PARAMS_ERROR('请传入需要修改的项目')
     }
 
     // 验证角色是否存在
-    const role = await this.roleService.findRoleById(roleId)
-    if (!role) {
-      throw AdminError.ROLE_NOT_EXISTS
+    for (const rId of roleId) {
+      const role = await this.roleService.findRoleById(rId)
+      if (!role) {
+        throw AdminError.ROLE_NOT_EXISTS
+      }
     }
 
     // 校验管理员是否存在
@@ -297,9 +312,9 @@ export class AdminController {
     }
 
     // 验证管理员是否重复
-    const adminByName = await this.adminService.findAdminByName(username)
+    const adminByName = await this.adminService.findAdminByEmail(username)
     if (adminByName && adminById.username !== username) {
-      throw AdminError.ADMIN_NAME_DUPLICATE
+      throw AdminError.ADMIN_DUPLICATE
     }
 
     const data = {}
@@ -309,14 +324,7 @@ export class AdminController {
     if (status) {
       Object.assign(data, {status})
     }
-    if (password) {
-      Object.assign(data, {password: this.adminService.genAdminPassword(password)})
-    }
     if (roleId) {
-      const checkRole = await this.roleService.findRoleById(roleId)
-      if (!checkRole) {
-        throw AdminError.ROLE_NOT_EXISTS
-      }
       Object.assign(data, {roleId})
     }
     await this.adminService.updateAdminById(adminId, data)
