@@ -26,6 +26,12 @@
           </Dropdown>
         </div>
       </div>
+      <div class="tabs">
+        <Tabs v-model:activeKey="tabsStore.current" hide-add type="editable-card" @edit="tabsEdit" @tabClick="tabsClick">
+          <TabPane v-for="tab in tabsStore.tabList" :key="tab.name" :tab="tab.meta?.name" :closable="!tab.meta?.closable">
+          </TabPane>
+        </Tabs>
+      </div>
       <div class="main-container">
         <div class="sub-container">
           <router-view/>
@@ -54,22 +60,24 @@
 
 <script lang="ts" setup>
 import {CaretDownOutlined} from '@ant-design/icons-vue'
-import {Breadcrumb, Button, Dropdown, Form, Input, Layout, Menu, message, Modal, Space} from 'ant-design-vue'
+import {Breadcrumb, Button, Dropdown, Form, Input, Layout, Menu, message, Modal, Space, Tabs} from 'ant-design-vue'
 import {onMounted, reactive, ref, watch} from 'vue'
 import {useRouter} from 'vue-router'
 import {AccountApi} from '../api'
 import {TokenKey} from '../constant'
 import {getRouters} from '../router'
-import {AdminStore} from '../store'
+import {AdminStore, TabsStore} from '../store'
 import {logout} from '../util'
 import SideBar from './SideBar.vue'
 
 const BreadcrumbItem = Breadcrumb.Item
 const FormItem = Form.Item
 const MenuItem = Menu.Item
+const TabPane = Tabs.TabPane
 const InputPassword = Input.Password
 
-const store = AdminStore()
+const tabsStore = TabsStore()
+const adminStore = AdminStore()
 const router = useRouter()
 const {currentRoute} = router
 const moduleName = ref('')
@@ -82,6 +90,7 @@ const modifyPasswordRules = reactive({
   password: [{required: true, message: '请输入要修改的登录密码', trigger: ['change', 'blur']}],
   password2: [{required: true, message: '请再次输入要修改的登录密码', trigger: ['change', 'blur']}]
 })
+
 const {validate, resetFields, validateInfos} = Form.useForm(modifyPasswordForm, modifyPasswordRules)
 
 // 监听
@@ -91,9 +100,19 @@ watch(currentRoute, () => updateBreadCrumb())
 onMounted(() => updateBreadCrumb())
 
 // 获取管理员登录名
-const {username} = store.adminInfo
+const {username} = adminStore.adminInfo
 
 // 方法定义
+const tabsEdit = (activeKey: string) => {
+  tabsStore.tabList = tabsStore.tabList.filter(e => e.name !== activeKey)
+  tabsClick(String(tabsStore.tabList[tabsStore.tabList.length - 1].name))
+}
+
+const tabsClick = (activeKey: string) => {
+  tabsStore.current = activeKey
+  router.push({name: activeKey})
+}
+
 const updateBreadCrumb = () => {
   pageName.value = String(currentRoute.value.meta.name)
   moduleName.value = findFather(currentRoute.value)
@@ -159,13 +178,16 @@ body {
 }
 
 
-.top {
+.top, .tabs {
   margin: 0 0 0 200px;
   background: #fff;
-  box-shadow: 0 2px 1px 1px rgba(100, 100, 100, 0.2);
   position: relative;
   z-index: 5;
   max-width: 100%;
+}
+
+.tabs {
+  padding-top: 5px;
 }
 
 .top .ant-breadcrumb {
@@ -179,10 +201,14 @@ body {
   padding: 15px;
 }
 
+.tabs {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
 .main-container {
   height: 100%;
   margin: 0 0 0 200px;
-  padding: 10px;
   max-height: 100%;
   background: #F0F0F0;
 }

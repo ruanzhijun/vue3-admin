@@ -1,10 +1,10 @@
 import {createRouter, createWebHistory, NavigationGuardNext, RouteLocationNormalized, RouteRecordRaw} from 'vue-router'
 import {AccountApi} from '../api'
 import Layout from '../components/Layout.vue'
-import {GetAuthority, TokenKey} from '../constant'
-import {AdminStore} from '../store'
-import {UserRoute} from './user'
+import {TokenKey} from '../constant'
+import {AdminStore, TabsStore} from '../store'
 import {SystemRoute} from './system'
+import {UserRoute} from './user'
 
 const whiteList = ['login', 'index', '404', '403'] as string[]
 const pageMapping = {} as any
@@ -19,6 +19,7 @@ export const routes: RouteRecordRaw[] = [
   {
     path: '/',
     redirect: '/index',
+    meta: {name: '后台首页', closable: true},
     component: Layout,
     children: [{
       path: '/index',
@@ -27,7 +28,7 @@ export const routes: RouteRecordRaw[] = [
     }]
   },
   ...UserRoute,
-  ...SystemRoute,
+  ...SystemRoute
 ]
 
 for (const route of routes.filter(v => whiteList.indexOf(String(v.name)) === -1)) {
@@ -84,21 +85,26 @@ export function hasPermission(page: string): boolean {
 
 // 路由钩子
 router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
-  const store = AdminStore()
   if (to.matched.length <= 0) {
     return next({name: '404'})
   }
 
+  const tabsStore = TabsStore()
+  const adminStore = AdminStore()
+  if (tabsStore.tabList.length <= 0) {
+    tabsStore.addTabs({name: 'index', meta: {name: '后台首页', closable: true}} as any)
+  }
+  tabsStore.addTabs(to)
   const token = localStorage.getItem(TokenKey)
   if (token) {
     if (!hasPermission(String(to.name).toString())) {
       return next({name: '403'})
     }
 
-    if (!store.authority.init) {
+    if (!adminStore.authority.init) {
       const data = await AccountApi.adminInfo()
-      store.$patch({authority: {init: true, components: data.authority.components, pages: data.authority.pages}})
-      store.$patch({adminInfo: {username: data.username}})
+      adminStore.$patch({authority: {init: true, components: data.authority.components, pages: data.authority.pages}})
+      adminStore.$patch({adminInfo: {username: data.username}})
     }
 
     return next()

@@ -10,8 +10,8 @@ export const AdminStore = defineStore({
     },
     authority: {
       init: false,
-      pages: [],
-      components: []
+      pages: [] as string[],
+      components: [] as string[]
     }
   }),
   getters: {

@@ -18,4 +18,5 @@ const pinia = {
 }
 
 export * from './admin'
+export * from './tabs'
 export {store, setupStore, pinia}
