@@ -62,7 +62,7 @@ import {AccountApi} from '../api'
 import {TokenKey} from '../constant'
 import {getRouters} from '../router'
 import {AdminStore, TabsStore} from '../store'
-import {logout,checkPasswordLevel} from '../util'
+import {logout} from '../util'
 import SideBar from './SideBar.vue'
 
 const FormItem = Form.Item
@@ -124,7 +124,6 @@ const onSubmit = (e: any) => {
     let result = 0
     submitLoading.value = true
     const {password, password2} = values
-    console.log('checkPasswordLevel:',checkPasswordLevel(password))
     const tooltip = document.getElementById('password-not-equals') as any
     if (password !== password2) {
       tooltip.style.display = 'block'
