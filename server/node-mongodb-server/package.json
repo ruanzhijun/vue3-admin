@@ -8,9 +8,9 @@
     "doc": "rimraf doc/ && node scripts/error-code.js && apidoc -i src/ -o doc/"
   },
   "dependencies": {
-    "@nestjs/common": "10.2.10",
-    "@nestjs/core": "10.2.10",
-    "@nestjs/platform-express": "10.2.10",
+    "@nestjs/common": "10.3.0",
+    "@nestjs/core": "10.3.0",
+    "@nestjs/platform-express": "10.3.0",
     "@nestjs/typeorm": "10.0.1",
     "bluebird": "3.7.2",
     "captcha.gif": "1.0.11",
@@ -35,8 +35,8 @@
     "@types/bluebird": "3.5.42",
     "@types/mocha": "10.0.6",
     "@types/node": "20.10.5",
-    "@typescript-eslint/eslint-plugin": "6.14.0",
-    "@typescript-eslint/parser": "6.14.0",
+    "@typescript-eslint/eslint-plugin": "6.16.0",
+    "@typescript-eslint/parser": "6.16.0",
     "apidoc": "1.2.0",
     "cross-env": "7.0.3",
     "eslint": "8.56.0",

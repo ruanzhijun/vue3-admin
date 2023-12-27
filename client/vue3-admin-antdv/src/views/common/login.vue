@@ -124,7 +124,7 @@ document.onkeydown = function (e) {
   position: absolute;
   top: 0vh;
   left: 50vw;
-  padding: 40px;
+  padding: 40px 40px 0 40px;
   transform: translate(-50%, 80%);
   background: rgba(0, 0, 0, .5);
   box-sizing: border-box;

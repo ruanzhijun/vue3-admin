@@ -19,7 +19,7 @@ export const routes: RouteRecordRaw[] = [
   {
     path: '/',
     redirect: '/index',
-    meta: {name: '后台首页', closable: true},
+    meta: {name: '后台首页', closable: false},
     component: Layout,
     children: [{
       path: '/index',
@@ -75,8 +75,8 @@ export function hasPermission(page: string): boolean {
     return true
   }
 
-  const store = AdminStore()
-  const {pages} = store.authority as {init: boolean, pages: string[], components: string[]}
+  const adminStore = AdminStore()
+  const {pages} = adminStore.authority as {init: boolean, pages: string[], components: string[]}
   if (!pages || pages.length <= 0) {
     getRouters().forEach(module => module.children?.forEach(p => pages.push(String(p.name))))
   }
@@ -92,7 +92,7 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
   const tabsStore = TabsStore()
   const adminStore = AdminStore()
   if (tabsStore.tabList.length <= 0) {
-    tabsStore.addTabs({name: 'index', meta: {name: '后台首页', closable: true}} as any)
+    tabsStore.addTabs({name: 'index', meta: {name: '后台首页', closable: false}} as any)
   }
   tabsStore.addTabs(to)
   const token = localStorage.getItem(TokenKey)

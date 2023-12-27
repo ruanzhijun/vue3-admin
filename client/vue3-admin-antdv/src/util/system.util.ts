@@ -3,11 +3,13 @@ import {ref} from 'vue'
 import {stripEmptyValue} from '.'
 import {DefaultPageSize, MaxPageSize, PageSizeOptions, TokenKey} from '../constant'
 import router from '../router'
+import {TabsStore} from '../store'
 
 /**
  * 退出
  */
 export function logout(): void {
+  TabsStore().tabList = []
   localStorage.removeItem(TokenKey)
   router.push({name: 'login'})
 }

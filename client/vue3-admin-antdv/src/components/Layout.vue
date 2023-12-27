@@ -3,11 +3,6 @@
     <SideBar/>
     <Layout>
       <div class="top">
-        <Breadcrumb>
-          <BreadcrumbItem>后台首页</BreadcrumbItem>
-          <BreadcrumbItem v-if="moduleName && pageName">{{ moduleName }}</BreadcrumbItem>
-          <BreadcrumbItem v-if="moduleName && pageName">{{ pageName }}</BreadcrumbItem>
-        </Breadcrumb>
         <div class="user">
           <Dropdown :trigger="['click']">
             <a class="ant-dropdown-link" @click="e => e.preventDefault()">{{ username }}
@@ -28,7 +23,7 @@
       </div>
       <div class="tabs">
         <Tabs v-model:activeKey="tabsStore.current" hide-add type="editable-card" @edit="tabsEdit" @tabClick="tabsClick">
-          <TabPane v-for="tab in tabsStore.tabList" :key="tab.name" :tab="tab.meta?.name" :closable="!tab.meta?.closable">
+          <TabPane v-for="tab in tabsStore.tabList" :key="tab.name" :tab="tab.meta?.name" :closable="tab.meta?.closable">
           </TabPane>
         </Tabs>
       </div>
@@ -60,17 +55,16 @@
 
 <script lang="ts" setup>
 import {CaretDownOutlined} from '@ant-design/icons-vue'
-import {Breadcrumb, Button, Dropdown, Form, Input, Layout, Menu, message, Modal, Space, Tabs} from 'ant-design-vue'
+import {Button, Dropdown, Form, Input, Layout, Menu, message, Modal, Space, Tabs} from 'ant-design-vue'
 import {onMounted, reactive, ref, watch} from 'vue'
 import {useRouter} from 'vue-router'
 import {AccountApi} from '../api'
 import {TokenKey} from '../constant'
 import {getRouters} from '../router'
 import {AdminStore, TabsStore} from '../store'
-import {logout} from '../util'
+import {logout,checkPasswordLevel} from '../util'
 import SideBar from './SideBar.vue'
 
-const BreadcrumbItem = Breadcrumb.Item
 const FormItem = Form.Item
 const MenuItem = Menu.Item
 const TabPane = Tabs.TabPane
@@ -130,6 +124,7 @@ const onSubmit = (e: any) => {
     let result = 0
     submitLoading.value = true
     const {password, password2} = values
+    console.log('checkPasswordLevel:',checkPasswordLevel(password))
     const tooltip = document.getElementById('password-not-equals') as any
     if (password !== password2) {
       tooltip.style.display = 'block'
@@ -190,11 +185,6 @@ body {
   padding-top: 5px;
 }
 
-.top .ant-breadcrumb {
-  width: 300px;
-  margin: 15px 0 0 15px;
-  float: left;
-}
 
 .top .user a {
   float: right;
