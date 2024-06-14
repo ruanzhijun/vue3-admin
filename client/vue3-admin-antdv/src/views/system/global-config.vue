@@ -21,7 +21,7 @@
       </Table>
     </TabsTabPane>
   </Tabs>
-  <Modal v-model:visible="modalVisible" :title="modalTitle" :closable="true" :keyboard="false" :maskClosable="false" :footer="null" :destroyOnClose="true" @cancel="onCancel">
+  <Modal v-model:open="modalVisible" :title="modalTitle" :closable="true" :keyboard="false" :maskClosable="false" :footer="null" :destroyOnClose="true" @cancel="onCancel">
     <Form :model="form" :rules="rules" :label-col="{span:4}" :wrapper-col="{span:16}">
       <Input v-model:value="form.key" style="display:none"/>
       <FormItem ref="module" label="所属模块" name="module" v-bind="validateInfos.module">

@@ -3,7 +3,7 @@
  * @param value 值
  */
 export function isEmpty(value: any): boolean {
-  if (typeof value === 'number') {
+  if (typeof value === 'boolean' || typeof value === 'number') {
     return false
   }
   return !value || value === '' || value === null || value.length <= 0 || Object.keys(value).length <= 0

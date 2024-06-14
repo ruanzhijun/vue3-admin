@@ -93,7 +93,6 @@ const getCaptcha = async () => {
   const result = await SystemApi.getCaptcha()
   captchaImg.value = `data:image/png;base64,${result.captcha}`
   form.uuid = result.uuid
-  console.log(form)
 }
 
 // 生命周期

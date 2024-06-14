@@ -18,56 +18,54 @@
   </Space>
   <div class="line"/>
   <Table bordered :data-source="roleList" :columns="columns" :loading="tableLoading" :pagination="pagination">
-    <template slot="status" v-slot:status="{text, record}">
-      <Tag color="green" v-if="record.status === 'enable'">{{ record.status === 'enable' ? '正常' : '' }}</Tag>
-      <Tag color="red" v-if="record.status === 'frozen'">{{ record.status === 'frozen' ? '冻结' : '' }}</Tag>
-    </template>
-    <template slot="authority" v-slot:authority="{text, record}">
-      <div v-for="option in record.name === '超级管理员' ? options: parseAuthority(record.authority)" class="authority-page">
-        <div class="role-module">
-          <Tag color="red" :key="option.key" class="authority-tag">{{ option.title }}</Tag>
+    <template #bodyCell="{column, text, record}">
+      <template v-if="column.dataIndex === 'authority'">
+        <div v-for="option in record.name === '超级管理员' ? options: parseAuthority(record.authority)" class="authority-page">
+          <div class="role-module">
+            <Tag color="red" :key="option.key" class="authority-tag">{{ option.title }}</Tag>
+          </div>
+          <div class="role-page">
+            <div v-for="page in option.children" class="authority-tag">
+              <Popover v-if="page.children.length > 0">
+                <template v-slot:content>
+                  <Tag color="cyan" v-for="component in page.children" :key="component.key">{{ component.title }}</Tag>
+                </template>
+                <Tag color="blue" :key="page.key">{{ page.title }}</Tag>
+              </Popover>
+              <Tag color="blue" v-else :key="page.key">{{ page.title }}</Tag>
+            </div>
+          </div>
+          <br>
         </div>
-        <div class="role-page">
-          <div v-for="page in option.children" class="authority-tag">
-            <Popover v-if="page.children.length > 0">
-              <template v-slot:content>
-                <Tag color="cyan" v-for="component in page.children" :key="component.key">{{ component.title }}</Tag>
-              </template>
-              <Tag color="blue" :key="page.key">{{ page.title }}</Tag>
-            </Popover>
-            <Tag color="blue" v-else :key="page.key">{{ page.title }}</Tag>
-          </div>
+      </template>
+      <template v-if="column.dataIndex === 'createTime'">{{ format(record.createTime) }}</template>
+      <template v-if="column.dataIndex === 'operate'">
+        <div v-if="record.name === '超级管理员'">
+          <Space>
+            <Tooltip placement="topRight" title="超管角色不能编辑">
+              <Button size="small" disabled>编辑</Button>
+            </Tooltip>
+            <Tooltip placement="topLeft" title="超管角色不能删除">
+              <Button size="small" disabled>删除</Button>
+            </Tooltip>
+          </Space>
         </div>
-        <br>
-      </div>
-    </template>
-    <template slot="format" v-slot:format="{text}">{{ format(text) }}</template>
-    <template slot="operate" v-slot:operate="{text, record}">
-      <div v-if="record.name === '超级管理员'">
-        <Space>
-          <Tooltip placement="topRight" title="超管角色不能编辑">
-            <Button size="small" disabled>编辑</Button>
-          </Tooltip>
-          <Tooltip placement="topLeft" title="超管角色不能删除">
-            <Button size="small" disabled>删除</Button>
-          </Tooltip>
-        </Space>
-      </div>
-      <div v-else>
-        <Space>
-          <div v-permission="'modify-role'">
-            <Button size="small" type="primary" @click="onModify(record.id)">编辑</Button>
-          </div>
-          <div v-permission="'delete-role'">
-            <Popconfirm cancelText="取消" okText="确认" title="确认删除吗？" @confirm="() => confirmDelete(record.id)">
-              <Button size="small" danger>删除</Button>
-            </Popconfirm>
-          </div>
-        </Space>
-      </div>
+        <div v-else>
+          <Space>
+            <div v-permission="'modify-role'">
+              <Button size="small" type="primary" @click="onModify(record.id)">编辑</Button>
+            </div>
+            <div v-permission="'delete-role'">
+              <Popconfirm cancelText="取消" okText="确认" title="确认删除吗？" @confirm="() => confirmDelete(record.id)">
+                <Button size="small" danger>删除</Button>
+              </Popconfirm>
+            </div>
+          </Space>
+        </div>
+      </template>
     </template>
   </Table>
-  <Modal v-model:visible="modalVisible" :title="modalTitle" :closable="true" :keyboard="false" :maskClosable="false" :footer="null" :destroyOnClose="true" :width="600" @cancel="onCancel">
+  <Modal v-model:open="modalVisible" :title="modalTitle" :closable="true" :keyboard="false" :maskClosable="false" :footer="null" :destroyOnClose="true" :width="600" @cancel="onCancel">
     <Form :model="form" :rules="rules" :label-col="{span:4}" :wrapper-col="{span:16}">
       <Input v-model:value="form.id" style="display:none"/>
       <FormItem ref="name" label="角色名称" name="name" v-bind="validateInfos.name">
@@ -98,9 +96,9 @@ const FormItem = Form.Item
 const columns = [
   {title: '角色名称', dataIndex: 'name', width: '150px'},
   {title: '关联人数', dataIndex: 'relations', width: '90px'},
-  {title: '权限列表', dataIndex: 'authority', slots: {customRender: 'authority'}},
-  {title: '创建时间', dataIndex: 'createTime', width: '170px', slots: {customRender: 'format'}},
-  {title: '操作', dataIndex: 'operate', width: '150px', slots: {customRender: 'operate'}}
+  {title: '权限列表', dataIndex: 'authority'},
+  {title: '创建时间', dataIndex: 'createTime', width: '170px'},
+  {title: '操作', dataIndex: 'operate', width: '150px'}
 ]
 
 const rules = reactive({

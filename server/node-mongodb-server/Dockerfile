@@ -1,7 +1,7 @@
-FROM node:18.7.0-alpine3.16 as base
+FROM node:20.14.0-alpine3.20 as base
 WORKDIR /srv/app
-RUN echo https://mirrors.ustc.edu.cn/alpine/v3.16/main/ > /etc/apk/repositories
-RUN echo https://mirrors.ustc.edu.cn/alpine/v3.16/community/ >> /etc/apk/repositories
+RUN echo https://mirrors.ustc.edu.cn/alpine/v3.20/main/ > /etc/apk/repositories
+RUN echo https://mirrors.ustc.edu.cn/alpine/v3.20/community/ >> /etc/apk/repositories
 RUN apk update && apk upgrade --available
 RUN apk add --no-cache -U tzdata
 RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
@@ -11,7 +11,7 @@ COPY package.json .
 RUN yarn --production --registry https://registry.npm.taobao.org && mv node_modules node_modules_prod
 RUN yarn --registry https://registry.npm.taobao.org
 
-FROM node:18.7.0-alpine3.16 as build
+FROM node:20.14.0-alpine3.20 as build
 WORKDIR /srv/app
 COPY --from=base /srv/app/node_modules ./node_modules
 COPY --from=base /srv/app/package.json ./package.json
@@ -19,7 +19,7 @@ COPY ./tsconfig.json ./tsconfig.json
 COPY ./src ./src
 RUN npm run build
 
-FROM node:18.7.0-alpine3.16
+FROM node:20.14.0-alpine3.20
 WORKDIR /srv/app
 RUN rm -rf /etc/localtime /etc/timezone
 COPY --from=base /etc/localtime /etc/localtime

@@ -2,20 +2,27 @@
   <ConfigProvider :locale="locale">
     <RouterView/>
   </ConfigProvider>
+  <BackTop :visibility-height="10"/>
 </template>
 
 <script lang="ts" setup>
-import {Watermark} from '@pansy/watermark'
-import {ConfigProvider} from 'ant-design-vue'
-import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import {onMounted} from 'vue'
+import {ConfigProvider, FloatButton} from 'ant-design-vue'
+import zhCN from 'ant-design-vue/es/locale/zh_CN'
+import {AdminStore} from "@/store";
 
-new Watermark({text: 'vue3-admin-antdv', zIndex: 99999, container: 'app', blindOpacity: 1}).show()
-const visible = true
 const locale = zhCN
+const BackTop = FloatButton.BackTop
+
 onMounted(() => {
-  // 禁止网页复制和右键功能
-  // document.addEventListener('selectstart', event => event.preventDefault())
-  // document.addEventListener('contextmenu', event => event.preventDefault())
+  const adminStore = AdminStore()
+  adminStore.$patch({authority: {init: false}})
+
+  // 非本地开发环境禁止网页右键功能
+  if (import.meta.env.VITE_ENV != 'dev') {
+    document.addEventListener('selectstart', event => event.preventDefault())
+    document.addEventListener('contextmenu', event => event.preventDefault())
+  }
 })
+
 </script>

@@ -25,15 +25,17 @@
   </Space>
   <div class="line"/>
   <Table bordered :data-source="logList" :columns="columns" :loading="tableLoading" :pagination="pagination">
-    <template slot="requestTime" v-slot:requestTime="{text}">{{ format(text) }}</template>
-    <template slot="message" v-slot:message="{text, record}">{{ record.result }}<br/><span class="gray-font-color">{{ record.message }}</span></template>
-    <template slot="ipArea" v-slot:ipArea="{text, record}">{{ record.ip }}<br/><span class="gray-font-color">{{ record.ipArea }}</span></template>
+    <template #bodyCell="{column, text, record}">
+      <template v-if="column.dataIndex === 'requestTime'">{{ format(record.requestTime) }}</template>
+      <template v-if="column.dataIndex === 'result'">{{ record.result }}<br/><span class="gray-font-color">{{ record.message }}</span></template>
+      <template v-if="column.dataIndex === 'ip'">{{ record.ip }}<br/><span class="gray-font-color">{{ record.ipArea }}</span></template>
+    </template>
   </Table>
 </template>
 
 <script lang="ts" setup>
 import {CalendarOutlined} from '@ant-design/icons-vue'
-import {Button, DatePicker, Table, Form, Input, Select} from 'ant-design-vue'
+import {Button, DatePicker, Form, Input, Select, Space, Table} from 'ant-design-vue'
 import {onMounted, reactive, ref} from 'vue'
 import {SystemApi} from '../../api'
 import {format, queryString, updateRouter, usePagination} from '../../util'
@@ -45,9 +47,9 @@ const DatePickerRangePicker = DatePicker.RangePicker
 const columns = [
   {title: '管理员', width: '180px', dataIndex: 'name'},
   {title: '动作', width: '180px', dataIndex: 'action'},
-  {title: '操作结果', dataIndex: 'result', slots: {customRender: 'message'}},
-  {title: 'ip地址', width: '135px', dataIndex: 'ip', slots: {customRender: 'ipArea'}},
-  {title: '操作时间', width: '170px', dataIndex: 'requestTime', slots: {customRender: 'requestTime'}}
+  {title: '操作结果', dataIndex: 'result'},
+  {title: 'ip地址', width: '200px', dataIndex: 'ip'},
+  {title: '操作时间', width: '200px', dataIndex: 'requestTime'}
 ]
 
 // 状态

@@ -4,8 +4,8 @@ import * as CryptoJS from 'crypto-js'
 import * as _ from 'lodash'
 import {ObjectId} from 'mongodb'
 import {MongoRepository} from 'typeorm'
-import {MongoFindOneOptions} from 'typeorm/find-options/mongodb/MongoFindOneOptions'
 import {MongoFindManyOptions} from 'typeorm/find-options/mongodb/MongoFindManyOptions'
+import {MongoFindOneOptions} from 'typeorm/find-options/mongodb/MongoFindOneOptions'
 import {qqwry} from '../../common/bootstrap'
 import {DatabaseType} from '../../common/constant'
 import {AdminError} from '../../common/error'
@@ -86,17 +86,10 @@ export class AdminService {
     let includeSuperRole = false
     for (const roleId of admin.roleId) {
       const role = await this.roleService.findRoleById(roleId)
-      authority.urls = new Set((role.authority.urls || []).concat(authority.urls || []))
-      authority.pages = new Set((role.authority.pages || []).concat(authority.pages || []))
-      authority.components = new Set((role.authority.components || []).concat(authority.components || []))
+      authority.urls = Array.from(new Set((role.authority.urls || []).concat(authority.urls || [])))
+      authority.pages = Array.from(new Set((role.authority.pages || []).concat(authority.pages || [])))
+      authority.components = Array.from(new Set((role.authority.components || []).concat(authority.components || [])))
       includeSuperRole = includeSuperRole || role.name === '超级管理员'
-    }
-
-    // 如果包含【超级管理员】，则放开所有权限
-    authority = includeSuperRole ? {} : {
-      urls: Array.from(authority.urls),
-      pages: Array.from(authority.pages),
-      components: Array.from(authority.components)
     }
     return {username: admin.username, authority}
   }

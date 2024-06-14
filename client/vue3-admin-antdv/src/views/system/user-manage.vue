@@ -18,34 +18,37 @@
   </Space>
   <div class="line"/>
   <Table bordered :data-source="adminList" :columns="columns" :loading="tableLoading" :pagination="pagination">
-    <template slot="email" v-slot:email="{text, record}">{{ text }}
-      <Tag color="rgb(0, 187, 34)" v-if="store.adminInfo.username === record.username">这是您</Tag>
-    </template>
-    <template slot="roleNames" v-slot:roleNames="{text, record}">{{ text.join('、') }}</template>
-    <template slot="status" v-slot:status="{text, record}">
-      <Tag color="green" v-if="record.status === 'enable'">{{ record.status === 'enable' ? '正常' : '' }}</Tag>
-      <Tag color="red" v-if="record.status === 'frozen'">{{ record.status === 'frozen' ? '冻结' : '' }}</Tag>
-    </template>
-    <template slot="createTime" v-slot:createTime="{text}">{{ text ? format(text) : '--' }}</template>
-    <template slot="lastLoginTime" v-slot:lastLoginTime="{text}">{{ text ? format(text) : '--' }}</template>
-    <template slot="lastLoginInfo" v-slot:lastLoginInfo="{text, record}">{{ record.lastLoginIp }}<br/><span class="gray-font-color">{{ record.lastLoginArea }}</span></template>
-    <template slot="operate" v-slot:operate="{text, record}">
-      <Space>
-        <div v-permission="'modify-admin'">
-          <Button size="small" type="primary" @click="onModify(record.id)">编辑</Button>
-        </div>
-        <div v-permission="'delete-admin'">
-          <Tooltip placement="topRight" title="不能删除自己" v-if="store.adminInfo.username === record.username">
-            <Button size="small" disabled>删除</Button>
-          </Tooltip>
-          <Popconfirm v-else cancelText="取消" okText="确认" title="确认删除吗？" @confirm="() => confirmDelete(record.id)">
+    <template #bodyCell="{column, text, record}">
+      <template v-if="column.dataIndex === 'email'">
+        {{ record.email }}
+        <Tag color="rgb(0, 187, 34)" v-if="store.adminInfo.username === record.username">这是您</Tag>
+      </template>
+      <template v-if="column.dataIndex === 'roleNames'">{{ text.join('、') }}</template>
+      <template v-if="column.dataIndex === 'status'">
+        <Tag color="green" v-if="record.status === 'enable'">{{ record.status === 'enable' ? '正常' : '' }}</Tag>
+        <Tag color="red" v-if="record.status === 'frozen'">{{ record.status === 'frozen' ? '冻结' : '' }}</Tag>
+      </template>
+      <template v-if="column.dataIndex === 'creatTime'">{{ text ? format(record.creatTime) : '--' }}</template>
+      <template v-if="column.dataIndex === 'lastLoginTime'">{{ record.lastLoginTime ? format(record.lastLoginTime) : '--' }}</template>
+      <template v-if="column.dataIndex === 'lastLoginInfo'">{{ record.lastLoginIp }}<br/><span class="gray-font-color">{{ record.lastLoginArea }}</span></template>
+      <template v-if="column.dataIndex === 'operate'">
+        <Space>
+          <div v-permission="'modify-admin'">
+            <Button size="small" type="primary" @click="onModify(record.id)">编辑</Button>
+          </div>
+          <div v-permission="'delete-admin'">
+            <Tooltip placement="topRight" title="不能删除自己" v-if="store.adminInfo.username === record.username">
+              <Button size="small" disabled>删除</Button>
+            </Tooltip>
+            <Popconfirm v-else cancelText="取消" okText="确认" title="确认删除吗？" @confirm="() => confirmDelete(record.id)">
               <Button size="small" danger>删除</Button>
             </Popconfirm>
-        </div>
-      </Space>
+          </div>
+        </Space>
+      </template>
     </template>
   </Table>
-  <Modal v-model:visible="modalVisible" :title="modalTitle" :closable="true" :keyboard="false" :maskClosable="false" :footer="null" :destroyOnClose="true" :width="700" @cancel="onCancel">
+  <Modal v-model:open="modalVisible" :title="modalTitle" :closable="true" :keyboard="false" :maskClosable="false" :footer="null" :destroyOnClose="true" :width="700" @cancel="onCancel">
     <Form :model="form" :rules="rules" :label-col="{span:5}" :wrapper-col="{span:16}">
       <Input v-model:value="form.id" style="display:none"/>
       <FormItem ref="name" label="管理员登录邮箱" name="email" v-bind="validateInfos.email">
@@ -84,14 +87,14 @@ const CheckboxGroup = Checkbox.Group
 
 // 变量
 const columns = [
-  {title: '管理员登录邮箱', width: '250px', dataIndex: 'email', slots: {customRender: 'email'}},
+  {title: '管理员登录邮箱', width: '250px', dataIndex: 'email'},
   {title: '管理员名称', width: '120px', dataIndex: 'username'},
-  {title: '管理员角色', dataIndex: 'roleNames', slots: {customRender: 'roleNames'}},
-  {title: '状态', dataIndex: 'status', width: '70px', slots: {customRender: 'status'}},
-  {title: '账号创建时间', dataIndex: 'createTime', width: '170px', slots: {customRender: 'createTime'}},
-  {title: '最后登录时间', dataIndex: 'lastLoginTime', width: '170px', slots: {customRender: 'lastLoginTime'}},
-  {title: '最后登录ip', dataIndex: 'lastLoginIp', width: '135px', slots: {customRender: 'lastLoginInfo'}},
-  {title: '操作', dataIndex: 'operate', width: '150px', slots: {customRender: 'operate'}}
+  {title: '管理员角色', dataIndex: 'roleNames'},
+  {title: '状态', dataIndex: 'status', width: '70px'},
+  {title: '账号创建时间', dataIndex: 'createTime', width: '170px'},
+  {title: '最后登录时间', dataIndex: 'lastLoginTime', width: '170px'},
+  {title: '最后登录ip', dataIndex: 'lastLoginIp', width: '135px'},
+  {title: '操作', dataIndex: 'operate', width: '150px'}
 ]
 
 const rules = reactive({
@@ -122,7 +125,7 @@ const modalVisible = ref(false)
 const modalTitle = ref('')
 const options = ref([] as any[])
 const checkedKeys = ref([] as string[])
-const form = reactive({id: '', email: '', username:'', password: '', status: 'enable', roleId: [] as string[]})
+const form = reactive({id: '', email: '', username: '', password: '', status: 'enable', roleId: [] as string[]})
 const searchForm = reactive({name: query && query.name ? query.name.toString() : ''})
 const {resetFields, validate, validateInfos} = Form.useForm(form, rules)
 const {validate: validateSearch, validateInfos: validateInfoSearch} = Form.useForm(searchForm, searchRules)
